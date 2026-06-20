@@ -44,6 +44,12 @@ import {
 } from "@app/components/v2";
 import { InfisicalSecretInput } from "@app/components/v2/InfisicalSecretInput";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@app/components/v3/generic/Accordion";
+import {
   ProjectPermissionActions,
   ProjectPermissionSub,
   useOrganization,
@@ -645,109 +651,116 @@ export const SecretDetailSidebar = ({
               <div
                 className={`mb-4 w-full border-t border-mineshaft-600 ${tagFields.fields.length > 0 || metadataFormFields.fields.length > 0 ? "block" : "hidden"}`}
               />
-              <div
-                className={`flex justify-between px-4 text-mineshaft-100 ${metadataFormFields.fields.length > 0 ? "flex-col" : "flex-row"}`}
-              >
-                <div
-                  className={`text-sm text-mineshaft-300 ${metadataFormFields.fields.length > 0 ? "mb-2" : "mt-0.5"}`}
-                >
-                  Metadata
-                </div>
-                <FormControl>
-                  <div className="flex flex-col space-y-2">
-                    {metadataFormFields.fields.map(({ id: metadataFieldId }, i) => (
-                      <div key={metadataFieldId} className="flex items-end space-x-2">
-                        <div className="grow">
-                          {i === 0 && <span className="text-xs text-mineshaft-400">Key</span>}
-                          <Controller
-                            control={control}
-                            name={`secretMetadata.${i}.key`}
-                            render={({ field, fieldState: { error } }) => (
-                              <FormControl
-                                isError={Boolean(error?.message)}
-                                errorText={error?.message}
-                                className="mb-0"
-                              >
-                                <Input {...field} className="max-h-8" />
-                              </FormControl>
-                            )}
-                          />
-                        </div>
-                        <div className="grow">
-                          {i === 0 && (
-                            <FormLabel
-                              label="Value"
-                              className="text-xs text-mineshaft-400"
-                              isOptional
-                            />
-                          )}
-                          <Controller
-                            control={control}
-                            name={`secretMetadata.${i}.value`}
-                            render={({ field, fieldState: { error } }) => (
-                              <FormControl
-                                isError={Boolean(error?.message)}
-                                errorText={error?.message}
-                                className="mb-0"
-                              >
-                                <Input {...field} className="max-h-8" />
-                              </FormControl>
-                            )}
-                          />
-                        </div>
-                        <div>
-                          {i === 0 && (
-                            <FormLabel label="Encrypt" className="text-xs text-mineshaft-400" />
-                          )}
-                          <Controller
-                            control={control}
-                            defaultValue={
-                              currentProject.enforceEncryptedSecretManagerSecretMetadata
-                            }
-                            name={`secretMetadata.${i}.isEncrypted`}
-                            render={({ field, fieldState: { error } }) => (
-                              <FormControl
-                                isError={Boolean(error?.message)}
-                                errorText={error?.message}
-                                className="mb-0 w-12"
-                              >
-                                <Switch
-                                  id="metadata-is-encrypted-checkbox"
-                                  isChecked={field.value}
-                                  defaultChecked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="mt-1.5 mb-2 ml-1"
+              <Accordion type="multiple" variant="ghost" className="px-4">
+                <AccordionItem value="metadata">
+                  <AccordionTrigger>Metadata</AccordionTrigger>
+                  <AccordionContent forceMount className="px-0">
+                    <div className="flex flex-col text-mineshaft-100">
+                      <FormControl>
+                        <div className="flex flex-col space-y-2">
+                          {metadataFormFields.fields.map(({ id: metadataFieldId }, i) => (
+                            <div key={metadataFieldId} className="flex items-end space-x-2">
+                              <div className="grow">
+                                {i === 0 && <span className="text-xs text-mineshaft-400">Key</span>}
+                                <Controller
+                                  control={control}
+                                  name={`secretMetadata.${i}.key`}
+                                  render={({ field, fieldState: { error } }) => (
+                                    <FormControl
+                                      isError={Boolean(error?.message)}
+                                      errorText={error?.message}
+                                      className="mb-0"
+                                    >
+                                      <Input {...field} className="max-h-8" />
+                                    </FormControl>
+                                  )}
                                 />
-                              </FormControl>
-                            )}
-                          />
+                              </div>
+                              <div className="grow">
+                                {i === 0 && (
+                                  <FormLabel
+                                    label="Value"
+                                    className="text-xs text-mineshaft-400"
+                                    isOptional
+                                  />
+                                )}
+                                <Controller
+                                  control={control}
+                                  name={`secretMetadata.${i}.value`}
+                                  render={({ field, fieldState: { error } }) => (
+                                    <FormControl
+                                      isError={Boolean(error?.message)}
+                                      errorText={error?.message}
+                                      className="mb-0"
+                                    >
+                                      <Input {...field} className="max-h-8" />
+                                    </FormControl>
+                                  )}
+                                />
+                              </div>
+                              <div>
+                                {i === 0 && (
+                                  <FormLabel
+                                    label="Encrypt"
+                                    className="text-xs text-mineshaft-400"
+                                  />
+                                )}
+                                <Controller
+                                  control={control}
+                                  defaultValue={
+                                    currentProject.enforceEncryptedSecretManagerSecretMetadata
+                                  }
+                                  name={`secretMetadata.${i}.isEncrypted`}
+                                  render={({ field, fieldState: { error } }) => (
+                                    <FormControl
+                                      isError={Boolean(error?.message)}
+                                      errorText={error?.message}
+                                      className="mb-0 w-12"
+                                    >
+                                      <Switch
+                                        id="metadata-is-encrypted-checkbox"
+                                        isChecked={field.value}
+                                        defaultChecked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        className="mt-1.5 mb-2 ml-1"
+                                      />
+                                    </FormControl>
+                                  )}
+                                />
+                              </div>
+                              <IconButton
+                                ariaLabel="delete key"
+                                className="bottom-0.5 max-h-8"
+                                variant="outline_bg"
+                                onClick={() => metadataFormFields.remove(i)}
+                              >
+                                <FontAwesomeIcon icon={faTrash} />
+                              </IconButton>
+                            </div>
+                          ))}
+                          <div className={`${metadataFormFields.fields.length > 0 ? "pt-2" : ""}`}>
+                            <IconButton
+                              ariaLabel="Add Key"
+                              variant="outline_bg"
+                              size="xs"
+                              className="rounded-md"
+                              onClick={() =>
+                                metadataFormFields.append({
+                                  key: "",
+                                  value: "",
+                                  isEncrypted: false
+                                })
+                              }
+                            >
+                              <FontAwesomeIcon icon={faPlus} />
+                            </IconButton>
+                          </div>
                         </div>
-                        <IconButton
-                          ariaLabel="delete key"
-                          className="bottom-0.5 max-h-8"
-                          variant="outline_bg"
-                          onClick={() => metadataFormFields.remove(i)}
-                        >
-                          <FontAwesomeIcon icon={faTrash} />
-                        </IconButton>
-                      </div>
-                    ))}
-                    <div className={`${metadataFormFields.fields.length > 0 ? "pt-2" : ""}`}>
-                      <IconButton
-                        ariaLabel="Add Key"
-                        variant="outline_bg"
-                        size="xs"
-                        className="rounded-md"
-                        onClick={() =>
-                          metadataFormFields.append({ key: "", value: "", isEncrypted: false })
-                        }
-                      >
-                        <FontAwesomeIcon icon={faPlus} />
-                      </IconButton>
+                      </FormControl>
                     </div>
-                  </div>
-                </FormControl>
-              </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
             <Controller
               control={control}
@@ -769,150 +782,166 @@ export const SecretDetailSidebar = ({
                 </FormControl>
               )}
             />
-            <div className="dark flex max-h-96 flex-1 cursor-default flex-col text-sm text-bunker-300">
-              <div className="mb-0.5 text-mineshaft-400">Version History</div>
-              <div className="flex thin-scrollbar flex-1 flex-col space-y-2 overflow-x-hidden overflow-y-auto rounded-md border border-mineshaft-600 bg-mineshaft-900 p-4 dark:scheme-dark">
-                {secretVersion?.map((version) => (
-                  <SecretVersionItem
-                    canReadValue={!cannotReadSecretValue}
-                    secretVersion={version}
-                    secret={secret}
-                    currentVersion={secretVersion.length}
-                    onRedactSecretValue={async (versionId) => {
-                      await redactSecretValue({ versionId, secretId: secret.id });
+            <div className="dark flex max-h-96 flex-1 cursor-default flex-col px-4 text-sm text-bunker-300">
+              <Accordion type="multiple" variant="ghost">
+                <AccordionItem value="version-history">
+                  <AccordionTrigger>Version History</AccordionTrigger>
+                  <AccordionContent forceMount className="px-0">
+                    <div className="flex thin-scrollbar flex-1 flex-col space-y-2 overflow-x-hidden overflow-y-auto rounded-md border border-mineshaft-600 bg-mineshaft-900 p-4 dark:scheme-dark">
+                      {secretVersion?.map((version) => (
+                        <SecretVersionItem
+                          canReadValue={!cannotReadSecretValue}
+                          secretVersion={version}
+                          secret={secret}
+                          currentVersion={secretVersion.length}
+                          onRedactSecretValue={async (versionId) => {
+                            await redactSecretValue({ versionId, secretId: secret.id });
 
-                      createNotification({
-                        title: "Secret value redacted",
-                        text: "The secret value has been redacted successfully and is no longer persisted or viewable.",
-                        type: "success"
-                      });
-                    }}
-                    canEditSecret={!cannotEditSecret}
-                    onRevert={async (versionValue) => {
-                      await fetchValue();
+                            createNotification({
+                              title: "Secret value redacted",
+                              text: "The secret value has been redacted successfully and is no longer persisted or viewable.",
+                              type: "success"
+                            });
+                          }}
+                          canEditSecret={!cannotEditSecret}
+                          onRevert={async (versionValue) => {
+                            await fetchValue();
 
-                      setTimeout(() => {
-                        setValue("value", versionValue, { shouldDirty: true });
-                      }, 5);
-                    }}
-                  />
-                ))}
-              </div>
+                            setTimeout(() => {
+                              setValue("value", versionValue, { shouldDirty: true });
+                            }, 5);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
-            <div className="dark flex flex-col text-sm text-bunker-300">
-              <div className="mb-0.5 text-mineshaft-400">
-                Access List
-                <Tooltip
-                  content="Lists all users, machine identities, and groups that have been granted any permission level (read, create, edit, or delete) for this secret."
-                  className="z-100"
-                >
-                  <FontAwesomeIcon icon={faCircleQuestion} className="ml-2" />
-                </Tooltip>
-              </div>
-              {secretAccessList ? (
-                <div className="flex flex-col space-y-2 overflow-x-hidden overflow-y-auto rounded-md border border-mineshaft-600 bg-mineshaft-900 p-4 dark:scheme-dark">
-                  {secretAccessList.users.length > 0 && (
-                    <div className="pb-3">
-                      <div className="mb-2 font-bold">Users</div>
-                      <div className="flex flex-wrap gap-2">
-                        {secretAccessList.users.map((user) => (
-                          <div className="rounded-md bg-bunker-500">
-                            <Tooltip
-                              side="left"
-                              content={user.allowedActions
-                                .map((action) => camelCaseToSpaces(action))
-                                .join(", ")}
-                              className="z-100 capitalize"
-                            >
-                              <div className="text-secondary/80 rounded-md border border-mineshaft-600 bg-mineshaft-700 px-1 py-0.5 text-sm hover:text-mineshaft-100">
-                                {user.name}
-                              </div>
-                            </Tooltip>
+            <div className="dark flex flex-col px-4 text-sm text-bunker-300">
+              <Accordion type="multiple" variant="ghost">
+                <AccordionItem value="access-list">
+                  <AccordionTrigger>
+                    <span className="flex items-center">
+                      Access List
+                      <Tooltip
+                        content="Lists all users, machine identities, and groups that have been granted any permission level (read, create, edit, or delete) for this secret."
+                        className="z-100"
+                      >
+                        <FontAwesomeIcon icon={faCircleQuestion} className="ml-2" />
+                      </Tooltip>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent forceMount className="px-0">
+                    {secretAccessList ? (
+                      <div className="flex flex-col space-y-2 overflow-x-hidden overflow-y-auto rounded-md border border-mineshaft-600 bg-mineshaft-900 p-4 dark:scheme-dark">
+                        {secretAccessList.users.length > 0 && (
+                          <div className="pb-3">
+                            <div className="mb-2 font-bold">Users</div>
+                            <div className="flex flex-wrap gap-2">
+                              {secretAccessList.users.map((user) => (
+                                <div className="rounded-md bg-bunker-500">
+                                  <Tooltip
+                                    side="left"
+                                    content={user.allowedActions
+                                      .map((action) => camelCaseToSpaces(action))
+                                      .join(", ")}
+                                    className="z-100 capitalize"
+                                  >
+                                    <div className="text-secondary/80 rounded-md border border-mineshaft-600 bg-mineshaft-700 px-1 py-0.5 text-sm hover:text-mineshaft-100">
+                                      {user.name}
+                                    </div>
+                                  </Tooltip>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {secretAccessList.identities.length > 0 && (
-                    <div className="pb-3">
-                      <div className="mb-2 font-bold">Identities</div>
-                      <div className="flex flex-wrap gap-2">
-                        {secretAccessList.identities.map((identity) => (
-                          <div className="rounded-md bg-bunker-500">
-                            <Tooltip
-                              side="left"
-                              content={identity.allowedActions
-                                .map(
-                                  (action) =>
-                                    action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
-                                )
-                                .join(", ")}
-                              className="z-100"
-                            >
-                              <Link
-                                to={
-                                  `${getProjectBaseURL(currentProject.type)}/identities/$identityId` as const
-                                }
-                                params={{
-                                  orgId: currentOrg.id,
-                                  projectId: currentProject.id,
-                                  identityId: identity.id
-                                }}
-                                className="text-secondary/80 rounded-md border border-mineshaft-600 bg-mineshaft-700 px-1 py-0.5 text-sm hover:text-mineshaft-100"
-                              >
-                                {identity.name}
-                              </Link>
-                            </Tooltip>
+                        )}
+                        {secretAccessList.identities.length > 0 && (
+                          <div className="pb-3">
+                            <div className="mb-2 font-bold">Identities</div>
+                            <div className="flex flex-wrap gap-2">
+                              {secretAccessList.identities.map((identity) => (
+                                <div className="rounded-md bg-bunker-500">
+                                  <Tooltip
+                                    side="left"
+                                    content={identity.allowedActions
+                                      .map(
+                                        (action) =>
+                                          action.charAt(0).toUpperCase() +
+                                          action.slice(1).toLowerCase()
+                                      )
+                                      .join(", ")}
+                                    className="z-100"
+                                  >
+                                    <Link
+                                      to={
+                                        `${getProjectBaseURL(currentProject.type)}/identities/$identityId` as const
+                                      }
+                                      params={{
+                                        orgId: currentOrg.id,
+                                        projectId: currentProject.id,
+                                        identityId: identity.id
+                                      }}
+                                      className="text-secondary/80 rounded-md border border-mineshaft-600 bg-mineshaft-700 px-1 py-0.5 text-sm hover:text-mineshaft-100"
+                                    >
+                                      {identity.name}
+                                    </Link>
+                                  </Tooltip>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {secretAccessList.groups.length > 0 && (
-                    <div className="pb-3">
-                      <div className="mb-2 font-bold">Groups</div>
-                      <div className="flex flex-wrap gap-2">
-                        {secretAccessList.groups.map((group) => (
-                          <div className="rounded-md bg-bunker-500">
-                            <Tooltip
-                              side="left"
-                              content={group.allowedActions
-                                .map(
-                                  (action) =>
-                                    action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
-                                )
-                                .join(", ")}
-                              className="z-100"
-                            >
-                              <Link
-                                to={"/organizations/$orgId/groups/$groupId" as const}
-                                params={{
-                                  orgId: currentOrg.id,
-                                  groupId: group.id
-                                }}
-                                className="text-secondary/80 rounded-md border border-mineshaft-600 bg-mineshaft-700 px-1 py-0.5 text-sm hover:text-mineshaft-100"
-                              >
-                                {group.name}
-                              </Link>
-                            </Tooltip>
+                        )}
+                        {secretAccessList.groups.length > 0 && (
+                          <div className="pb-3">
+                            <div className="mb-2 font-bold">Groups</div>
+                            <div className="flex flex-wrap gap-2">
+                              {secretAccessList.groups.map((group) => (
+                                <div className="rounded-md bg-bunker-500">
+                                  <Tooltip
+                                    side="left"
+                                    content={group.allowedActions
+                                      .map(
+                                        (action) =>
+                                          action.charAt(0).toUpperCase() +
+                                          action.slice(1).toLowerCase()
+                                      )
+                                      .join(", ")}
+                                    className="z-100"
+                                  >
+                                    <Link
+                                      to={"/organizations/$orgId/groups/$groupId" as const}
+                                      params={{
+                                        orgId: currentOrg.id,
+                                        groupId: group.id
+                                      }}
+                                      className="text-secondary/80 rounded-md border border-mineshaft-600 bg-mineshaft-700 px-1 py-0.5 text-sm hover:text-mineshaft-100"
+                                    >
+                                      {group.name}
+                                    </Link>
+                                  </Tooltip>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        ))}
+                        )}
                       </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Button
-                  className="w-full"
-                  leftIcon={<FontAwesomeIcon icon={faSearch} />}
-                  variant="outline_bg"
-                  isDisabled={isPending}
-                  isLoading={isPending}
-                  onClick={() => handlePopUpOpen("secretAccessUpgradePlan")}
-                >
-                  Analyze Access
-                </Button>
-              )}
+                    ) : (
+                      <Button
+                        className="w-full"
+                        leftIcon={<FontAwesomeIcon icon={faSearch} />}
+                        variant="outline_bg"
+                        isDisabled={isPending}
+                        isLoading={isPending}
+                        onClick={() => handlePopUpOpen("secretAccessUpgradePlan")}
+                      >
+                        Analyze Access
+                      </Button>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
             <div className="mt-auto flex items-center space-x-2 pb-4">
               <Button
