@@ -87,6 +87,7 @@ export const SecretApprovalRequest = () => {
   const {
     data,
     isPending: isApprovalRequestLoading,
+    isError: isApprovalRequestError,
     refetch
   } = useGetSecretApprovalRequests({
     projectId,
@@ -345,7 +346,25 @@ export const SecretApprovalRequest = () => {
             </div>
           );
         })}
-        {Boolean(!secretApprovalRequests.length && isFiltered && !isApprovalRequestLoading) && (
+        {isApprovalRequestError && (
+          <div className="flex flex-col items-center py-12">
+            <EmptyState title="Failed to load change requests" icon={faSearch} />
+            <Button
+              data-testid="approvals-retry"
+              variant="outline_bg"
+              className="mt-4"
+              onClick={() => refetch()}
+            >
+              Try again
+            </Button>
+          </div>
+        )}
+        {Boolean(
+          !secretApprovalRequests.length &&
+            isFiltered &&
+            !isApprovalRequestLoading &&
+            !isApprovalRequestError
+        ) && (
           <div className="py-12">
             <EmptyState title="No Requests Match Filters" icon={faSearch} />
           </div>
