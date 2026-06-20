@@ -7,7 +7,6 @@ import { EnvironmentSection } from "../EnvironmentSection";
 import { PointInTimeVersionLimitSection } from "../PointInTimeVersionLimitSection";
 import { SecretDetectionIgnoreValuesSection } from "../SecretDetectionIgnoreValuesSection/SecretDetectionIgnoreValuesSection";
 import { SecretSharingSection } from "../SecretSharingSection";
-import { SecretSnapshotsLegacySection } from "../SecretSnapshotsLegacySection";
 import { SecretTagsSection } from "../SecretTagsSection";
 import { SecretValidationRulesSection } from "../SecretValidationRulesSection";
 
@@ -22,7 +21,6 @@ export const SecretSettingsTab = () => {
       <AutoCapitalizationSection />
       <EnforceEncryptedMetadataSection />
       <SecretSharingSection />
-      <SecretSnapshotsLegacySection />
       <PointInTimeVersionLimitSection />
       {config.paramsFolderSecretDetectionEnabled && <SecretDetectionIgnoreValuesSection />}
       <BackfillSecretReferenceSecretion />
