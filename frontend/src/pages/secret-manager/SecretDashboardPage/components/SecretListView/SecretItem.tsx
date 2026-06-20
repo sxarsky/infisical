@@ -415,6 +415,8 @@ export const SecretItem = memo(
     return (
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div
+          data-testid="secret-row"
+          data-secret-key={secret.key}
           className={twMerge(
             "border-b border-mineshaft-600 bg-mineshaft-800 shadow-none hover:bg-mineshaft-700",
             isDirty && "border-primary-400/50",
