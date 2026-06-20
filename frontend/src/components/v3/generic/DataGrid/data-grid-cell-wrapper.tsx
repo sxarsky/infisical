@@ -4,7 +4,7 @@ import { cn } from "@app/components/v3/utils";
 
 import { useComposedRefs } from "./compose-refs";
 import type { DataGridCellProps } from "./data-grid-types";
-import { getCellKey } from "./data-grid-utils";
+import { getCellKey, getSearchMatchCellId } from "./data-grid-utils";
 
 interface DataGridCellWrapperProps<TData>
   extends DataGridCellProps<TData>,
@@ -148,6 +148,7 @@ export function DataGridCellWrapper<TData>({
   return (
     <div
       role="button"
+      id={isSearchMatch ? getSearchMatchCellId(rowIndex, columnId) : undefined}
       data-slot="grid-cell-wrapper"
       data-editing={isEditing ? "" : undefined}
       data-focused={isFocused ? "" : undefined}
