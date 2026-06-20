@@ -120,6 +120,7 @@ import { Route as sshSshCasPageRouteImport } from './pages/ssh/SshCasPage/route'
 import { Route as secretScanningSettingsPageRouteImport } from './pages/secret-scanning/SettingsPage/route'
 import { Route as secretScanningSecretScanningFindingsPageRouteImport } from './pages/secret-scanning/SecretScanningFindingsPage/route'
 import { Route as secretManagerSettingsPageRouteImport } from './pages/secret-manager/SettingsPage/route'
+import { Route as secretManagerSecretDashboardRedirectRouteImport } from './pages/secret-manager/SecretDashboardRedirect/route'
 import { Route as secretManagerOverviewPageRouteImport } from './pages/secret-manager/OverviewPage/route'
 import { Route as secretManagerInsightsPageRouteImport } from './pages/secret-manager/InsightsPage/route'
 import { Route as secretManagerSecretApprovalsPageRouteImport } from './pages/secret-manager/SecretApprovalsPage/route'
@@ -1509,6 +1510,13 @@ const secretManagerSettingsPageRouteRoute =
     getParentRoute: () => secretManagerLayoutRoute,
   } as any)
 
+const secretManagerSecretDashboardRedirectRouteRoute =
+  secretManagerSecretDashboardRedirectRouteImport.update({
+    id: '/secrets',
+    path: '/secrets',
+    getParentRoute: () => secretManagerLayoutRoute,
+  } as any)
+
 const secretManagerOverviewPageRouteRoute =
   secretManagerOverviewPageRouteImport.update({
     id: '/overview',
@@ -1853,9 +1861,9 @@ const sshSshCaByIDPageRouteRoute = sshSshCaByIDPageRouteImport.update({
 
 const secretManagerSecretDashboardPageRouteRoute =
   secretManagerSecretDashboardPageRouteImport.update({
-    id: '/secrets/$envSlug',
-    path: '/secrets/$envSlug',
-    getParentRoute: () => secretManagerLayoutRoute,
+    id: '/$envSlug',
+    path: '/$envSlug',
+    getParentRoute: () => secretManagerSecretDashboardRedirectRouteRoute,
   } as any)
 
 const secretManagerIntegrationsSelectIntegrationAuthPageRouteRoute =
@@ -3704,6 +3712,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof secretManagerOverviewPageRouteImport
       parentRoute: typeof secretManagerLayoutImport
     }
+    '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets': {
+      id: '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets'
+      path: '/secrets'
+      fullPath: '/organizations/$orgId/projects/secret-management/$projectId/secrets'
+      preLoaderRoute: typeof secretManagerSecretDashboardRedirectRouteImport
+      parentRoute: typeof secretManagerLayoutImport
+    }
     '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/settings': {
       id: '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/settings'
       path: '/settings'
@@ -4217,10 +4232,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets/$envSlug': {
       id: '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets/$envSlug'
-      path: '/secrets/$envSlug'
+      path: '/$envSlug'
       fullPath: '/organizations/$orgId/projects/secret-management/$projectId/secrets/$envSlug'
       preLoaderRoute: typeof secretManagerSecretDashboardPageRouteImport
-      parentRoute: typeof secretManagerLayoutImport
+      parentRoute: typeof secretManagerSecretDashboardRedirectRouteImport
     }
     '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/ssh/$projectId/_ssh-layout/ca/$caId': {
       id: '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/ssh/$projectId/_ssh-layout/ca/$caId'
@@ -5703,6 +5718,21 @@ const AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsPamProjectI
     AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsPamProjectIdRouteChildren,
   )
 
+interface secretManagerSecretDashboardRedirectRouteRouteChildren {
+  secretManagerSecretDashboardPageRouteRoute: typeof secretManagerSecretDashboardPageRouteRoute
+}
+
+const secretManagerSecretDashboardRedirectRouteRouteChildren: secretManagerSecretDashboardRedirectRouteRouteChildren =
+  {
+    secretManagerSecretDashboardPageRouteRoute:
+      secretManagerSecretDashboardPageRouteRoute,
+  }
+
+const secretManagerSecretDashboardRedirectRouteRouteWithChildren =
+  secretManagerSecretDashboardRedirectRouteRoute._addFileChildren(
+    secretManagerSecretDashboardRedirectRouteRouteChildren,
+  )
+
 interface AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsSecretManagementProjectIdSecretManagerLayoutIntegrationsRouteChildren {
   secretManagerIntegrationsListPageRouteRoute: typeof secretManagerIntegrationsListPageRouteRoute
   secretManagerIntegrationsDetailsByIDPageRouteRoute: typeof secretManagerIntegrationsDetailsByIDPageRouteRoute
@@ -5989,12 +6019,12 @@ interface secretManagerLayoutRouteChildren {
   secretManagerSecretApprovalsPageRouteRoute: typeof secretManagerSecretApprovalsPageRouteRoute
   secretManagerInsightsPageRouteRoute: typeof secretManagerInsightsPageRouteRoute
   secretManagerOverviewPageRouteRoute: typeof secretManagerOverviewPageRouteRoute
+  secretManagerSecretDashboardRedirectRouteRoute: typeof secretManagerSecretDashboardRedirectRouteRouteWithChildren
   secretManagerSettingsPageRouteRoute: typeof secretManagerSettingsPageRouteRoute
   projectAccessControlPageRouteSecretManagerRoute: typeof projectAccessControlPageRouteSecretManagerRoute
   projectAppConnectionsPageRouteSecretManagerRoute: typeof projectAppConnectionsPageRouteSecretManagerRoute
   projectAuditLogsPageRouteSecretManagerRoute: typeof projectAuditLogsPageRouteSecretManagerRoute
   AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsSecretManagementProjectIdSecretManagerLayoutIntegrationsRoute: typeof AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsSecretManagementProjectIdSecretManagerLayoutIntegrationsRouteWithChildren
-  secretManagerSecretDashboardPageRouteRoute: typeof secretManagerSecretDashboardPageRouteRoute
   projectGroupDetailsByIDPageRouteSecretManagerRoute: typeof projectGroupDetailsByIDPageRouteSecretManagerRoute
   projectIdentityDetailsByIDPageRouteSecretManagerRoute: typeof projectIdentityDetailsByIDPageRouteSecretManagerRoute
   projectMemberDetailsByIDPageRouteSecretManagerRoute: typeof projectMemberDetailsByIDPageRouteSecretManagerRoute
@@ -6009,6 +6039,8 @@ const secretManagerLayoutRouteChildren: secretManagerLayoutRouteChildren = {
     secretManagerSecretApprovalsPageRouteRoute,
   secretManagerInsightsPageRouteRoute: secretManagerInsightsPageRouteRoute,
   secretManagerOverviewPageRouteRoute: secretManagerOverviewPageRouteRoute,
+  secretManagerSecretDashboardRedirectRouteRoute:
+    secretManagerSecretDashboardRedirectRouteRouteWithChildren,
   secretManagerSettingsPageRouteRoute: secretManagerSettingsPageRouteRoute,
   projectAccessControlPageRouteSecretManagerRoute:
     projectAccessControlPageRouteSecretManagerRoute,
@@ -6018,8 +6050,6 @@ const secretManagerLayoutRouteChildren: secretManagerLayoutRouteChildren = {
     projectAuditLogsPageRouteSecretManagerRoute,
   AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsSecretManagementProjectIdSecretManagerLayoutIntegrationsRoute:
     AuthenticateInjectOrgDetailsOrgLayoutOrganizationsOrgIdProjectsSecretManagementProjectIdSecretManagerLayoutIntegrationsRouteWithChildren,
-  secretManagerSecretDashboardPageRouteRoute:
-    secretManagerSecretDashboardPageRouteRoute,
   projectGroupDetailsByIDPageRouteSecretManagerRoute:
     projectGroupDetailsByIDPageRouteSecretManagerRoute,
   projectIdentityDetailsByIDPageRouteSecretManagerRoute:
@@ -6673,6 +6703,7 @@ export interface FileRoutesByFullPath {
   '/organizations/$orgId/projects/secret-management/$projectId/approval': typeof secretManagerSecretApprovalsPageRouteRoute
   '/organizations/$orgId/projects/secret-management/$projectId/insights': typeof secretManagerInsightsPageRouteRoute
   '/organizations/$orgId/projects/secret-management/$projectId/overview': typeof secretManagerOverviewPageRouteRoute
+  '/organizations/$orgId/projects/secret-management/$projectId/secrets': typeof secretManagerSecretDashboardRedirectRouteRouteWithChildren
   '/organizations/$orgId/projects/secret-management/$projectId/settings': typeof secretManagerSettingsPageRouteRoute
   '/organizations/$orgId/projects/secret-scanning/$projectId/findings': typeof secretScanningSecretScanningFindingsPageRouteRoute
   '/organizations/$orgId/projects/secret-scanning/$projectId/settings': typeof secretScanningSettingsPageRouteRoute
@@ -6972,6 +7003,7 @@ export interface FileRoutesByTo {
   '/organizations/$orgId/projects/secret-management/$projectId/approval': typeof secretManagerSecretApprovalsPageRouteRoute
   '/organizations/$orgId/projects/secret-management/$projectId/insights': typeof secretManagerInsightsPageRouteRoute
   '/organizations/$orgId/projects/secret-management/$projectId/overview': typeof secretManagerOverviewPageRouteRoute
+  '/organizations/$orgId/projects/secret-management/$projectId/secrets': typeof secretManagerSecretDashboardRedirectRouteRouteWithChildren
   '/organizations/$orgId/projects/secret-management/$projectId/settings': typeof secretManagerSettingsPageRouteRoute
   '/organizations/$orgId/projects/secret-scanning/$projectId/findings': typeof secretScanningSecretScanningFindingsPageRouteRoute
   '/organizations/$orgId/projects/secret-scanning/$projectId/settings': typeof secretScanningSettingsPageRouteRoute
@@ -7270,6 +7302,7 @@ export interface FileRoutesById {
   '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/approval': typeof secretManagerSecretApprovalsPageRouteRoute
   '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/insights': typeof secretManagerInsightsPageRouteRoute
   '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/overview': typeof secretManagerOverviewPageRouteRoute
+  '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets': typeof secretManagerSecretDashboardRedirectRouteRouteWithChildren
   '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/settings': typeof secretManagerSettingsPageRouteRoute
   '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-scanning/$projectId/_secret-scanning-layout/findings': typeof secretScanningSecretScanningFindingsPageRouteRoute
   '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-scanning/$projectId/_secret-scanning-layout/settings': typeof secretScanningSettingsPageRouteRoute
@@ -7580,6 +7613,7 @@ export interface FileRouteTypes {
     | '/organizations/$orgId/projects/secret-management/$projectId/approval'
     | '/organizations/$orgId/projects/secret-management/$projectId/insights'
     | '/organizations/$orgId/projects/secret-management/$projectId/overview'
+    | '/organizations/$orgId/projects/secret-management/$projectId/secrets'
     | '/organizations/$orgId/projects/secret-management/$projectId/settings'
     | '/organizations/$orgId/projects/secret-scanning/$projectId/findings'
     | '/organizations/$orgId/projects/secret-scanning/$projectId/settings'
@@ -7878,6 +7912,7 @@ export interface FileRouteTypes {
     | '/organizations/$orgId/projects/secret-management/$projectId/approval'
     | '/organizations/$orgId/projects/secret-management/$projectId/insights'
     | '/organizations/$orgId/projects/secret-management/$projectId/overview'
+    | '/organizations/$orgId/projects/secret-management/$projectId/secrets'
     | '/organizations/$orgId/projects/secret-management/$projectId/settings'
     | '/organizations/$orgId/projects/secret-scanning/$projectId/findings'
     | '/organizations/$orgId/projects/secret-scanning/$projectId/settings'
@@ -8174,6 +8209,7 @@ export interface FileRouteTypes {
     | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/approval'
     | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/insights'
     | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/overview'
+    | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets'
     | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/settings'
     | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-scanning/$projectId/_secret-scanning-layout/findings'
     | '/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-scanning/$projectId/_secret-scanning-layout/settings'
@@ -9024,12 +9060,12 @@ export const routeTree = rootRoute
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/approval",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/insights",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/overview",
+        "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/settings",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/access-management",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/app-connections",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/audit-logs",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/integrations",
-        "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets/$envSlug",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/groups/$groupId",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/identities/$identityId",
         "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/members/$membershipId",
@@ -9146,6 +9182,13 @@ export const routeTree = rootRoute
     "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/overview": {
       "filePath": "secret-manager/OverviewPage/route.tsx",
       "parent": "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout"
+    },
+    "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets": {
+      "filePath": "secret-manager/SecretDashboardRedirect/route.tsx",
+      "parent": "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout",
+      "children": [
+        "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets/$envSlug"
+      ]
     },
     "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/settings": {
       "filePath": "secret-manager/SettingsPage/route.tsx",
@@ -9581,7 +9624,7 @@ export const routeTree = rootRoute
     },
     "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets/$envSlug": {
       "filePath": "secret-manager/SecretDashboardPage/route.tsx",
-      "parent": "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout"
+      "parent": "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/secret-management/$projectId/_secret-manager-layout/secrets"
     },
     "/_authenticate/_inject-org-details/_org-layout/organizations/$orgId/projects/ssh/$projectId/_ssh-layout/ca/$caId": {
       "filePath": "ssh/SshCaByIDPage/route.tsx",

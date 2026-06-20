@@ -19,6 +19,7 @@ const adminRoute = route("/admin", [
 const secretManagerRoutes = route("/organizations/$orgId/projects/secret-management/$projectId", [
   layout("secret-manager-layout", "secret-manager/layout.tsx", [
     route("/overview", "secret-manager/OverviewPage/route.tsx"),
+    route("/secrets", "secret-manager/SecretDashboardRedirect/route.tsx"),
     route("/secrets/$envSlug", "secret-manager/SecretDashboardPage/route.tsx"),
     route("/allowlist", "secret-manager/IPAllowlistPage/route.tsx"),
     route("/approval", "secret-manager/SecretApprovalsPage/route.tsx"),
