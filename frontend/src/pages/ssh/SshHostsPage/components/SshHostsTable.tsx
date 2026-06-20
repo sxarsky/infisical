@@ -1,6 +1,8 @@
+import { useMemo, useState } from "react";
 import {
   faDownload,
   faEllipsis,
+  faMagnifyingGlass,
   faPencil,
   faServer,
   faTrash
@@ -18,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   EmptyState,
+  Input,
   Table,
   TableContainer,
   TableSkeleton,
@@ -44,6 +47,21 @@ type Props = {
 export const SshHostsTable = ({ handlePopUpOpen }: Props) => {
   const { currentProject } = useProject();
   const { data, isPending } = useListWorkspaceSshHosts(currentProject?.id || "");
+  const [search, setSearch] = useState("");
+
+  const filteredHosts = useMemo(() => {
+    if (!data) return [];
+    const query = search.trim().toLowerCase();
+    if (!query) return data;
+    return data.filter(
+      (host) =>
+        host.hostname.toLowerCase().includes(query) ||
+        (host.alias ?? "").toLowerCase().includes(query)
+    );
+  }, [data, search]);
+
+  const hasSourceHosts = Boolean(data && data.length > 0);
+  const hasNoFilterMatch = hasSourceHosts && filteredHosts.length === 0;
 
   const downloadTxtFile = (filename: string, content: string) => {
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
@@ -65,6 +83,14 @@ export const SshHostsTable = ({ handlePopUpOpen }: Props) => {
 
   return (
     <div>
+      <Input
+        data-testid="ssh-host-filter"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+        placeholder="Search hosts by hostname or alias..."
+        containerClassName="mb-4"
+      />
       <TableContainer>
         <Table className="w-full table-fixed">
           <THead>
@@ -78,9 +104,8 @@ export const SshHostsTable = ({ handlePopUpOpen }: Props) => {
           <TBody>
             {isPending && <TableSkeleton columns={3} innerKey="org-ssh-cas" />}
             {!isPending &&
-              data &&
-              data.length > 0 &&
-              data.map((host) => {
+              filteredHosts.length > 0 &&
+              filteredHosts.map((host) => {
                 return (
                   <Tr
                     // className="h-10 cursor-pointer transition-colors duration-100 hover:bg-mineshaft-700"
@@ -271,6 +296,11 @@ export const SshHostsTable = ({ handlePopUpOpen }: Props) => {
         </Table>
         {!isPending && data?.length === 0 && (
           <EmptyState title="No SSH hosts have been added" icon={faServer} />
+        )}
+        {!isPending && hasNoFilterMatch && (
+          <div data-testid="ssh-host-filter-no-match">
+            <EmptyState title="No hosts match your search" icon={faMagnifyingGlass} />
+          </div>
         )}
       </TableContainer>
     </div>
