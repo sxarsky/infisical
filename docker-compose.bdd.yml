@@ -73,11 +73,7 @@ services:
       - backend
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./frontend/src:/app/src/ # mounted whole src to avoid missing reload on new files
-      - ./frontend/public:/app/public
-    env_file: .env
+      dockerfile: Dockerfile.bdd
 
   # ACME server for BDD tests
   pebble:
