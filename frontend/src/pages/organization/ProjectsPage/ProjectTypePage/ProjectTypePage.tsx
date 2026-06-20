@@ -19,6 +19,7 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import { UpgradePlanModal } from "@app/components/license/UpgradePlanModal";
+import { createNotification } from "@app/components/notifications";
 import { OrgPermissionCan } from "@app/components/permissions";
 import { NewProjectModal } from "@app/components/projects";
 import { CertManagerNotConfiguredModal } from "@app/components/projects/CertManagerNotConfiguredModal";
@@ -329,19 +330,29 @@ const MyProjectsForType = ({
 
   const addProjectToFavorites = async (projectId: string) => {
     if (currentOrg?.id) {
-      await updateUserProjectFavorites({
-        orgId: currentOrg.id,
-        projectFavorites: [...(projectFavorites || []), projectId]
-      });
+      try {
+        await updateUserProjectFavorites({
+          orgId: currentOrg.id,
+          projectFavorites: [...(projectFavorites || []), projectId]
+        });
+        createNotification({ text: "Project added to favorites", type: "success" });
+      } catch {
+        createNotification({ text: "Failed to add project to favorites", type: "error" });
+      }
     }
   };
 
   const removeProjectFromFavorites = async (projectId: string) => {
     if (currentOrg?.id) {
-      await updateUserProjectFavorites({
-        orgId: currentOrg.id,
-        projectFavorites: (projectFavorites || []).filter((entry) => entry !== projectId)
-      });
+      try {
+        await updateUserProjectFavorites({
+          orgId: currentOrg.id,
+          projectFavorites: (projectFavorites || []).filter((entry) => entry !== projectId)
+        });
+        createNotification({ text: "Project removed from favorites", type: "success" });
+      } catch {
+        createNotification({ text: "Failed to remove project from favorites", type: "error" });
+      }
     }
   };
 
