@@ -103,6 +103,7 @@ export function DataGrid<TData>({
         aria-rowcount={rows.length + (onRowAddProp ? 1 : 0)}
         aria-colcount={columns.length}
         data-slot="grid"
+        data-total-count={rows.length}
         tabIndex={0}
         ref={dataGridRef}
         className="relative grid thin-scrollbar flex-1 grid-rows-[auto_1fr_auto] overflow-auto rounded-md border border-border bg-container select-none focus:outline-none"
