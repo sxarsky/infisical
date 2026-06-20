@@ -21,6 +21,7 @@ import {
   SecretSyncImportSecretsModal,
   SecretSyncRemoveSecretsModal
 } from "@app/components/secret-syncs";
+import { Button, Modal, ModalContent } from "@app/components/v2";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,7 +55,8 @@ export const SecretSyncActionTriggers = ({ secretSync, onEdit }: Props) => {
   const { popUp, handlePopUpOpen, handlePopUpToggle } = usePopUp([
     "importSecrets",
     "removeSecrets",
-    "deleteSync"
+    "deleteSync",
+    "triggerSync"
   ] as const);
 
   const navigate = useNavigate();
@@ -112,6 +114,8 @@ export const SecretSyncActionTriggers = ({ secretSync, onEdit }: Props) => {
       text: `Successfully triggered ${destinationName} Sync`,
       type: "success"
     });
+
+    handlePopUpToggle("triggerSync", false);
   };
 
   const permissionSubject = getSecretSyncPermissionSubject(secretSync);
@@ -138,7 +142,10 @@ export const SecretSyncActionTriggers = ({ secretSync, onEdit }: Props) => {
             a={permissionSubject}
           >
             {(isAllowed: boolean) => (
-              <DropdownMenuItem onClick={handleTriggerSync} isDisabled={!isAllowed}>
+              <DropdownMenuItem
+                onClick={() => handlePopUpOpen("triggerSync")}
+                isDisabled={!isAllowed}
+              >
                 <RefreshCwIcon />
                 Trigger Sync
               </DropdownMenuItem>
@@ -254,6 +261,39 @@ export const SecretSyncActionTriggers = ({ secretSync, onEdit }: Props) => {
           })
         }
       />
+      <Modal
+        isOpen={popUp.triggerSync.isOpen}
+        onOpenChange={(isOpen) => handlePopUpToggle("triggerSync", isOpen)}
+      >
+        <ModalContent
+          title="Trigger sync?"
+          footerContent={[
+            <Button
+              isLoading={triggerSyncSecrets.isPending}
+              isDisabled={triggerSyncSecrets.isPending}
+              colorSchema="danger"
+              key="trigger-btn"
+              onClick={handleTriggerSync}
+            >
+              Trigger Sync
+            </Button>,
+            <Button
+              key="cancel-btn"
+              className="ml-4"
+              variant="outline_bg"
+              isDisabled={triggerSyncSecrets.isPending}
+              onClick={() => handlePopUpToggle("triggerSync", false)}
+            >
+              Cancel
+            </Button>
+          ]}
+        >
+          <div className="text-mineshaft-200">
+            This will push Infisical&apos;s secrets to the {destinationName} destination,
+            overwriting its current state.
+          </div>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
