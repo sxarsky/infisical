@@ -1,0 +1,34 @@
+# Skyramp Workspace Configuration
+workspace:
+  repoName: sxarsky/infisical
+  repoUrl: https://github.com/sxarsky/infisical
+metadata:
+  schemaVersion: v1
+  mcpVersion: 0.2.6
+  executorVersion: v1.3.27
+  createdAt: "2026-06-21T17:08:11.896Z"
+  updatedAt: "2026-06-21T17:08:11.903Z"
+services:
+  - serviceName: infisical-infisical-backend
+    language: typescript
+    framework: playwright
+    testDirectory: tests/skyramp/backend
+    api:
+      authType: bearer
+      baseUrl: http://localhost:8080
+    runtimeDetails:
+      serverStartCommand: docker compose -f docker-compose.bdd.yml up -d --build
+      runtime: docker
+      dockerNetwork: infisical_default
+  - serviceName: infisical-infisical-frontend
+    language: typescript
+    framework: playwright
+    testDirectory: tests/skyramp/frontend
+    api:
+      authType: none
+      authHeader: ""
+      baseUrl: http://localhost:8080
+    runtimeDetails:
+      serverStartCommand: docker compose -f docker-compose.bdd.yml up -d --build
+      runtime: docker
+      dockerNetwork: infisical_default
