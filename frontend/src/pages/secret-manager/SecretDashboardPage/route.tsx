@@ -4,6 +4,8 @@ import { z } from "zod";
 
 import { SecretDashboardPathBreadcrumb } from "@app/components/navigation/SecretDashboardPathBreadcrumb";
 import { BreadcrumbTypes } from "@app/components/v2";
+import { DashboardSecretsOrderBy } from "@app/hooks/api/dashboard/types";
+import { OrderByDirection } from "@app/hooks/api/generic/types";
 
 import { SecretDashboardPage } from "./SecretDashboardPage";
 
@@ -13,6 +15,8 @@ const SecretDashboardPageQueryParamsSchema = z.object({
   tags: z.string().catch(""),
   filterBy: z.string().catch(""),
   dynamicSecretId: z.string().catch(""),
+  orderBy: z.nativeEnum(DashboardSecretsOrderBy).catch(DashboardSecretsOrderBy.Name),
+  orderDirection: z.nativeEnum(OrderByDirection).catch(OrderByDirection.ASC),
   connectionId: z.string().optional(),
   connectionName: z.string().optional()
 });
@@ -28,7 +32,9 @@ export const Route = createFileRoute(
         search: "",
         tags: "",
         filterBy: "",
-        dynamicSecretId: ""
+        dynamicSecretId: "",
+        orderBy: DashboardSecretsOrderBy.Name,
+        orderDirection: OrderByDirection.ASC
       })
     ]
   },

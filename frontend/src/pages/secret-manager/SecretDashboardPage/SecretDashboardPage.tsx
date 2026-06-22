@@ -137,10 +137,18 @@ const Page = () => {
     perPage,
     page,
     setPerPage,
-    orderBy
+    orderBy,
+    setOrderBy
   } = usePagination<DashboardSecretsOrderBy>(DashboardSecretsOrderBy.Name, {
     initPerPage: getUserTablePreference("secretDashboardTable", PreferenceKey.PerPage, 100)
   });
+
+  // Seed the local sort state from the URL so a sorted view survives reload and is shareable
+  useEffect(() => {
+    if (routerQueryParams.orderBy) setOrderBy(routerQueryParams.orderBy);
+    if (routerQueryParams.orderDirection) setOrderDirection(routerQueryParams.orderDirection);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePerPageChange = (newPerPage: number) => {
     setPerPage(newPerPage);
@@ -528,10 +536,18 @@ const Page = () => {
     }
   }, [data, isBatchMode, setExistingKeys, secrets, importedSecrets, folders]);
 
-  const handleSortToggle = () =>
-    setOrderDirection((state) =>
-      state === OrderByDirection.ASC ? OrderByDirection.DESC : OrderByDirection.ASC
-    );
+  const handleSortToggle = () => {
+    const nextDirection =
+      orderDirection === OrderByDirection.ASC ? OrderByDirection.DESC : OrderByDirection.ASC;
+    setOrderDirection(nextDirection);
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        orderBy,
+        orderDirection: nextDirection
+      })
+    });
+  };
 
   const handleTagToggle = useCallback(
     (tagSlug: string) => {
@@ -979,6 +995,7 @@ const Page = () => {
                       <div className="h-5 w-0.5 rounded-[1.5px] bg-gray-400 opacity-50" />
                     </div>
                     <div
+                      data-testid="secret-sort-toggle"
                       className="flex shrink-0 items-center border-r border-mineshaft-600 py-2 pl-4"
                       style={{ width: colWidth }}
                       role="button"
