@@ -12,6 +12,9 @@ const SecretDashboardPageQueryParamsSchema = z.object({
   search: z.string().catch(""),
   tags: z.string().catch(""),
   filterBy: z.string().catch(""),
+  orderBy: z.string().catch(""),
+  orderDirection: z.string().catch(""),
+  page: z.coerce.number().catch(1),
   dynamicSecretId: z.string().catch(""),
   connectionId: z.string().optional(),
   connectionName: z.string().optional()
@@ -28,6 +31,9 @@ export const Route = createFileRoute(
         search: "",
         tags: "",
         filterBy: "",
+        orderBy: "",
+        orderDirection: "",
+        page: 1,
         dynamicSecretId: ""
       })
     ]
