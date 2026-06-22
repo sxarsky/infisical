@@ -1,0 +1,41 @@
+# Skyramp Workspace Configuration
+#
+# Pins the executor service config to baseUrl http://localhost:8080 (the host-published
+# nginx port) — the value that reaches the SUT on executor v1.3.28. Without a committed
+# workspace.yml, TestBot auto-derives this per run non-deterministically and occasionally
+# produces baseUrl: http://nginx (+ a doubled service name), which puts the executor in a
+# mode where the test's hardcoded localhost:8080 goto cannot reach the SUT. This file
+# removes that non-determinism. Replicates the config of the runs that executed reachably.
+workspace:
+  repoName: sxarsky/infisical
+  repoUrl: https://github.com/sxarsky/infisical
+metadata:
+  schemaVersion: v1
+  mcpVersion: 0.2.6
+  executorVersion: v1.3.28
+services:
+  - serviceName: infisical-backend
+    language: typescript
+    framework: playwright
+    testDirectory: tests/skyramp/backend
+    api:
+      schemaPath: http://localhost:8080/api/docs/json
+      authType: bearer
+      authHeader: Authorization
+      baseUrl: http://localhost:8080
+    runtimeDetails:
+      serverStartCommand: docker compose -f docker-compose.bdd.yml up -d backend
+      runtime: docker
+      dockerNetwork: infisical_default
+  - serviceName: infisical-frontend
+    language: typescript
+    framework: playwright
+    testDirectory: tests/skyramp/frontend
+    api:
+      authType: none
+      authHeader: ""
+      baseUrl: http://localhost:8080
+    runtimeDetails:
+      serverStartCommand: docker compose -f docker-compose.bdd.yml up -d frontend
+      runtime: docker
+      dockerNetwork: infisical_default
