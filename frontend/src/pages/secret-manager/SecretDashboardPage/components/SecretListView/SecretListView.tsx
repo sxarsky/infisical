@@ -8,7 +8,7 @@ import { DeleteActionModal } from "@app/components/v2";
 import { usePopUp } from "@app/hooks";
 import { useCreateSecretV3, useDeleteSecretV3, useUpdateSecretV3 } from "@app/hooks/api";
 import { dashboardKeys } from "@app/hooks/api/dashboard/queries";
-import { UsedBySecretSyncs } from "@app/hooks/api/dashboard/types";
+import { DashboardSecretValue, UsedBySecretSyncs } from "@app/hooks/api/dashboard/types";
 import { commitKeys } from "@app/hooks/api/folderCommits/queries";
 import { secretApprovalRequestKeys } from "@app/hooks/api/secretApprovalRequest/queries";
 import { PendingAction } from "@app/hooks/api/secretFolders/types";
@@ -402,6 +402,17 @@ export const SecretListView = ({
         });
         if (cb) cb();
       }
+      // Locally reflect the saved value on the list row before the background refetch settles
+      queryClient.setQueryData<DashboardSecretValue>(
+        dashboardKeys.getSecretValue({
+          projectId,
+          environment,
+          secretPath,
+          secretKey: key,
+          isOverride: false
+        }),
+        () => ({ value: value ?? "", valueOverride: undefined })
+      );
       queryClient.invalidateQueries({
         queryKey: dashboardKeys.getDashboardSecrets({
           projectId,
@@ -613,6 +624,7 @@ export const SecretListView = ({
             secretPath={secretPath}
             tags={wsTags}
             isSelected={Boolean(selectedSecrets?.[secret.id])}
+            isDetailOpen={(popUp.secretDetail?.data as SecretV3RawSanitized)?.id === secret.id}
             onToggleSecretSelect={toggleSelectedSecret}
             isVisible={isVisible}
             secret={secret}
