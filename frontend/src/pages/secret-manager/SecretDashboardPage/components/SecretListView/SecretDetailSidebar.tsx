@@ -43,6 +43,7 @@ import {
   Tooltip
 } from "@app/components/v2";
 import { InfisicalSecretInput } from "@app/components/v2/InfisicalSecretInput";
+import { Skeleton } from "@app/components/v3/generic/Skeleton";
 import {
   ProjectPermissionActions,
   ProjectPermissionSub,
@@ -435,29 +436,35 @@ export const SecretDetailSidebar = ({
                       label="Value"
                     >
                       <div className="flex items-start gap-x-2">
-                        <InfisicalSecretInput
-                          isReadOnly={
-                            isReadOnly ||
-                            !isAllowed ||
-                            secret?.isRotatedSecret ||
-                            secret?.isHoneyTokenSecret ||
-                            isLoadingSecretValue ||
-                            isErrorFetchingSecretValue
-                          }
-                          canEditButNotView={secret.secretValueHidden && canEditSecretValue}
-                          environment={environment}
-                          secretPath={secretPath}
-                          key="secret-value"
-                          isDisabled={isOverridden}
-                          containerClassName="text-bunker-300 w-full hover:border-primary-400/50 border border-mineshaft-600 bg-mineshaft-900 px-2 py-1.5"
-                          {...field}
-                          autoFocus={false}
-                          onFocus={() => setIsFieldFocused.on()}
-                          onBlur={() => {
-                            setIsFieldFocused.off();
-                            field.onBlur();
-                          }}
-                        />
+                        {isLoadingSecretValue ? (
+                          <Skeleton
+                            data-testid="secret-value-skeleton"
+                            className="h-[2.375rem] w-full bg-mineshaft-600/25"
+                          />
+                        ) : (
+                          <InfisicalSecretInput
+                            isReadOnly={
+                              isReadOnly ||
+                              !isAllowed ||
+                              secret?.isRotatedSecret ||
+                              secret?.isHoneyTokenSecret ||
+                              isErrorFetchingSecretValue
+                            }
+                            canEditButNotView={secret.secretValueHidden && canEditSecretValue}
+                            environment={environment}
+                            secretPath={secretPath}
+                            key="secret-value"
+                            isDisabled={isOverridden}
+                            containerClassName="text-bunker-300 w-full hover:border-primary-400/50 border border-mineshaft-600 bg-mineshaft-900 px-2 py-1.5"
+                            {...field}
+                            autoFocus={false}
+                            onFocus={() => setIsFieldFocused.on()}
+                            onBlur={() => {
+                              setIsFieldFocused.off();
+                              field.onBlur();
+                            }}
+                          />
+                        )}
                         <Tooltip
                           content={
                             !currentProject.secretSharing
