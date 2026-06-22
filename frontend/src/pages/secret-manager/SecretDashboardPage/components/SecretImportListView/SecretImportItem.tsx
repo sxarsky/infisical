@@ -34,6 +34,7 @@ type Props = {
   secretPath?: string;
   secretImport?: TSecretImport;
   isReplicationExpand?: boolean;
+  isSaving?: boolean;
   importedSecrets: {
     key: string;
     value?: string;
@@ -76,6 +77,7 @@ export const SecretImportItem = ({
   secretPath = "/",
   environment,
   secretImport,
+  isSaving,
   onExpandReplicateSecrets: onExpandReplicate
 }: Props) => {
   const {
@@ -152,6 +154,9 @@ export const SecretImportItem = ({
         role="button"
         ref={setNodeRef}
         tabIndex={0}
+        data-import-id={id}
+        data-dragging={isDragging}
+        data-saving={isSaving}
         style={style}
         onClick={handleRowClick}
         onKeyDown={(e) => {
