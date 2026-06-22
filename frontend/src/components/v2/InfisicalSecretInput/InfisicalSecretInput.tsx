@@ -433,6 +433,14 @@ export const InfisicalSecretInput = forwardRef<HTMLTextAreaElement, Props>(
         <Popover.Trigger asChild>
           <SecretInput
             {...props}
+            role="combobox"
+            aria-expanded={isPopupOpen}
+            aria-controls="secret-ref-suggestions"
+            aria-activedescendant={
+              isPopupOpen && highlightedIndex >= 0
+                ? `secret-ref-suggestion-${highlightedIndex}`
+                : undefined
+            }
             canEditButNotView={canEditButNotView}
             ref={handleRef}
             onKeyDown={handleKeyDown}
@@ -472,6 +480,8 @@ export const InfisicalSecretInput = forwardRef<HTMLTextAreaElement, Props>(
             <div
               className="h-full w-full flex-col items-center justify-center rounded-md text-white"
               ref={popoverContentRef}
+              id="secret-ref-suggestions"
+              role="listbox"
             >
               {suggestions.map((item, i) => {
                 let entryIcon;
@@ -529,6 +539,9 @@ export const InfisicalSecretInput = forwardRef<HTMLTextAreaElement, Props>(
                     key={`secret-reference-secret-${i + 1}`}
                   >
                     <div
+                      id={`secret-ref-suggestion-${i}`}
+                      role="option"
+                      aria-selected={highlightedIndex === i}
                       className={`${
                         highlightedIndex === i ? "bg-mineshaft-500" : ""
                       } text-md relative flex w-full cursor-pointer items-center justify-between px-2 py-2 outline-hidden transition-all select-none hover:bg-mineshaft-700 data-highlighted:bg-mineshaft-700`}
