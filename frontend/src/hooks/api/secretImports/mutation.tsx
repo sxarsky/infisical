@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { createNotification } from "@app/components/notifications";
 import { apiRequest } from "@app/config/request";
 import { dashboardKeys } from "@app/hooks/api/dashboard/queries";
 
@@ -75,6 +76,12 @@ export const useUpdateSecretImport = () => {
       });
       queryClient.invalidateQueries({
         queryKey: dashboardKeys.getDashboardSecrets({ projectId, secretPath: path ?? "/" })
+      });
+    },
+    onError: () => {
+      createNotification({
+        type: "error",
+        text: "Failed to reorder secret imports"
       });
     }
   });

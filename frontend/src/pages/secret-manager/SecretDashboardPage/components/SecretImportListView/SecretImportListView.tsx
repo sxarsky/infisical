@@ -128,6 +128,7 @@ export const SecretImportListView = ({
   );
 
   const [items, setItems] = useState(secretImports ?? []);
+  const [savingImportId, setSavingImportId] = useState<string | null>(null);
 
   const getImportReplicatedFolder = (importPath: string) => {
     if (!importPath.includes("/__reserve_replication_")) return undefined;
@@ -164,17 +165,29 @@ export const SecretImportListView = ({
     if (active.id !== over?.id) {
       const oldIndex = items.findIndex(({ id }) => id === active.id);
       const newIndex = items.findIndex(({ id }) => id === over?.id);
+      const previousOrder = items;
       const newImportOrder = arrayMove(items, oldIndex, newIndex);
       setItems(newImportOrder);
-      updateSecretImport({
-        projectId,
-        environment,
-        path: secretPath,
-        id: active.id as string,
-        import: {
-          position: newIndex + 1
+      setSavingImportId(active.id as string);
+      updateSecretImport(
+        {
+          projectId,
+          environment,
+          path: secretPath,
+          id: active.id as string,
+          import: {
+            position: newIndex + 1
+          }
+        },
+        {
+          onError: () => {
+            setItems(previousOrder);
+          },
+          onSettled: () => {
+            setSavingImportId(null);
+          }
         }
-      });
+      );
     }
   };
 
@@ -214,6 +227,7 @@ export const SecretImportListView = ({
               <SecretImportItem
                 searchTerm={searchTerm}
                 key={`imported-env-${item.id}`}
+                isSaving={savingImportId === item.id}
                 isReplicationExpand={replicationSecrets?.[item.id]}
                 onExpandReplicateSecrets={handleOpenReplicationSecrets}
                 secretImport={item}
