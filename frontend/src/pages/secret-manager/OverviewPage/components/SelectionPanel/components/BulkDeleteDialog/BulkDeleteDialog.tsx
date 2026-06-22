@@ -28,6 +28,7 @@ import { SecretV3RawSanitized, TSecretFolder } from "@app/hooks/api/types";
 import { CollapsibleSecretImports } from "@app/pages/secret-manager/SecretDashboardPage/components/SecretListView/CollapsibleSecretImports";
 
 import { EntryType } from "../../SelectionPanel";
+import { BulkRollupItemState } from "../../use-bulk-rollup";
 
 type BulkDeleteDialogProps = {
   isOpen: boolean;
@@ -43,6 +44,11 @@ type BulkDeleteDialogProps = {
   importedBy?: ProjectSecretsImportedBy[] | null;
   secretsToDeleteKeys: string[];
   usedBySecretSyncsFiltered: UsedBySecretSyncs[] | null;
+  rollup?: {
+    states: Record<string, BulkRollupItemState>;
+    saved: number;
+    total: number;
+  };
 };
 
 const BulkDeleteDialogContent = ({
@@ -53,7 +59,8 @@ const BulkDeleteDialogContent = ({
   visibleEnvs,
   importedBy,
   secretsToDeleteKeys,
-  usedBySecretSyncsFiltered
+  usedBySecretSyncsFiltered,
+  rollup
 }: Omit<BulkDeleteDialogProps, "isOpen">) => {
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -111,6 +118,12 @@ const BulkDeleteDialogContent = ({
         {subTitle && <DialogDescription>{subTitle}</DialogDescription>}
       </DialogHeader>
 
+      {rollup && rollup.total > 0 && (
+        <div data-testid="bulk-rollup-header" className="text-sm text-muted">
+          {rollup.saved} of {rollup.total} succeeded
+        </div>
+      )}
+
       {selectedResources.length > 0 && (
         <Table
           containerClassName={twMerge(
@@ -139,7 +152,11 @@ const BulkDeleteDialogContent = ({
           </TableHeader>
           <TableBody>
             {selectedResources.map((item) => (
-              <TableRow key={`${item.type}-${item.name}`} className="group">
+              <TableRow
+                key={`${item.type}-${item.name}`}
+                className="group"
+                data-state={rollup?.states[item.name]}
+              >
                 <TableCell className="sticky left-0 z-10 bg-container transition-colors duration-75 group-hover:bg-container-hover">
                   {item.type === "folder" ? (
                     <FolderIcon className="size-4 text-folder" />

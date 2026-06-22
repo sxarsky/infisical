@@ -34,6 +34,8 @@ import {
   MoveSecretsModal
 } from "@app/pages/secret-manager/OverviewPage/components/SelectionPanel/components";
 
+import { useBulkRollup } from "./use-bulk-rollup";
+
 export enum EntryType {
   FOLDER = "folder",
   SECRET = "secret",
@@ -67,6 +69,7 @@ export const SelectionPanel = ({
 }: Props) => {
   const { permission } = useProjectPermission();
   const { subscription } = useSubscription();
+  const rollup = useBulkRollup();
 
   const { handlePopUpOpen, handlePopUpToggle, handlePopUpClose, popUp } = usePopUp([
     "bulkDeleteEntries",
@@ -155,6 +158,11 @@ export const SelectionPanel = ({
     let hasDirectDelete = false;
     const hasFolders = selectedFolderCount > 0;
     const hasSecrets = selectedKeysCount > 0;
+
+    rollup.reset();
+    [...Object.keys(selectedEntries.secret), ...Object.keys(selectedEntries.folder)].forEach(
+      (name) => rollup.setItemState(name, "saving")
+    );
 
     const promises = userAvailableEnvs.map(async (env) => {
       // additional check: ensure that bulk delete is only executed on envs that user has access to
@@ -245,6 +253,23 @@ export const SelectionPanel = ({
     const results = await Promise.allSettled(promises);
     const areAllEntriesDeleted = results.every((result) => result.status === "fulfilled");
     const areSomeEntriesDeleted = results.some((result) => result.status === "fulfilled");
+
+    const succeededEnvSlugs = new Set(
+      results
+        .filter(
+          (result): result is PromiseFulfilledResult<{ environment: string }> =>
+            result.status === "fulfilled"
+        )
+        .map((result) => result.value.environment)
+    );
+    Object.entries(selectedEntries.secret).forEach(([name, envRecord]) => {
+      const ok = Object.keys(envRecord).every((slug) => succeededEnvSlugs.has(slug));
+      rollup.setItemState(name, ok ? "saved" : "error");
+    });
+    Object.entries(selectedEntries.folder).forEach(([name, envRecord]) => {
+      const ok = Object.keys(envRecord).every((slug) => succeededEnvSlugs.has(slug));
+      rollup.setItemState(name, ok ? "saved" : "error");
+    });
 
     let resourceLabel = "secrets";
     if (hasFolders && hasSecrets) {
@@ -479,6 +504,7 @@ export const SelectionPanel = ({
       <BulkDeleteDialog
         isOpen={popUp.bulkDeleteEntries.isOpen}
         onOpenChange={(isOpen) => handlePopUpToggle("bulkDeleteEntries", isOpen)}
+        rollup={{ states: rollup.states, saved: rollup.tally.saved, total: rollup.tally.total }}
         title={getDeleteModalTitle()}
         subTitle={getDeleteModalSubTitle()}
         onDeleteApproved={handleBulkDelete}
