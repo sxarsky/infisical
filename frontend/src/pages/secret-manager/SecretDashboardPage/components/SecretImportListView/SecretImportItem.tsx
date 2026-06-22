@@ -153,6 +153,8 @@ export const SecretImportItem = ({
         ref={setNodeRef}
         tabIndex={0}
         style={style}
+        data-dragging={isDragging}
+        data-import-id={id}
         onClick={handleRowClick}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
