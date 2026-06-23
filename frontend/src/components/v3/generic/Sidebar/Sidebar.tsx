@@ -150,6 +150,7 @@ function SidebarProvider({
     <SidebarContext.Provider value={contextValue}>
       <div
         data-slot="sidebar-wrapper"
+        data-breakpoint={isMobile ? "mobile" : "desktop"}
         style={
           {
             "--sidebar-width": SIDEBAR_WIDTH,
