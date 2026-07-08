@@ -55,7 +55,7 @@ jobs:
           skyrampMcpVersion: '0.3.0-rc.1'
           targetSetupCommand: 'docker compose -f docker-compose.bdd.yml up -d --build'
           targetReadyCheckCommand: 'curl -sf http://localhost:8080/api/status && curl -sf http://localhost:8080 | grep -q "root"'
-          targetReadyCheckTimeout: '300'
+          targetReadyCheckTimeout: '1800'
           authTokenCommand: 'curl -sf -X POST http://localhost:8080/api/v1/admin/bootstrap -H "Content-Type: application/json" -d "{\"email\":\"admin@test.com\",\"password\":\"Password123!\",\"organization\":\"TestOrg\"}" | jq -r ".identity.credentials.token"'
           uiCredentials: 'username=admin@test.com;password=Password123!;role=admin'
           targetTeardownCommand: 'docker compose -f docker-compose.bdd.yml down -v'
