@@ -46,7 +46,9 @@ test('testUi', async ({ page }) => {
     await page.getByText("Add a New Secret").click();
     await page.getByRole("textbox", { name: "Type your secret name" }).fill("BASELINE_KEY");
     await page.getByRole("textbox", { name: "secret value" }).fill("baseline-value-123");
-    await page.getByRole("button", { name: "Create Secret" }).click();
+    const createSecretButton = page.getByRole("button", { name: "Create Secret" });
+    await expect(createSecretButton).toBeEnabled();
+    await createSecretButton.click();
     await page.waitForTimeout(5000);
 
     const overviewUrl = page.url();
