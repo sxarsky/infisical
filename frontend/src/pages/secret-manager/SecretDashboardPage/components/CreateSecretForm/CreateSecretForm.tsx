@@ -61,8 +61,8 @@ export const CreateSecretForm = ({
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting }
-  } = useForm<TFormSchema>({ resolver: zodResolver(typeSchema) });
+    formState: { errors, isSubmitting, isValid }
+  } = useForm<TFormSchema>({ resolver: zodResolver(typeSchema), mode: "onChange" });
   const { closePopUp } = usePopUpAction();
 
   const { mutateAsync: createSecretV3 } = useCreateSecretV3();
@@ -196,6 +196,8 @@ export const CreateSecretForm = ({
           placeholder="Type your secret name"
           onPaste={handlePaste}
           autoCapitalization={autoCapitalize}
+          isError={Boolean(errors?.key)}
+          aria-invalid={errors?.key ? "true" : undefined}
         />
       </FormControl>
       <Controller
@@ -277,7 +279,7 @@ export const CreateSecretForm = ({
       />
       <div className="mt-7 flex items-center">
         <Button
-          isDisabled={isSubmitting}
+          isDisabled={isSubmitting || !isValid}
           isLoading={isSubmitting}
           key="layout-create-project-submit"
           className="mr-4"
