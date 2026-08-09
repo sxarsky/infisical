@@ -57,7 +57,12 @@ test('testUi', async ({ page }) => {
     // Locate the secret row by its row-container styling and assert it renders the key.
     const secretRow = page.locator("div.border-b.bg-mineshaft-800");
     await secretRow.first().waitFor({ state: 'visible', timeout: 15000 });
-    await expect(secretRow).toHaveCount(1);
+    await expect(secretRow.first()).toBeVisible();
+    await expect(page.getByTestId("secret-sort-toggle")).toBeVisible();
+    await page.getByTestId("secret-sort-toggle").click();
+    await expect(page).toHaveURL(/orderDirection=desc/);
+    await page.getByTestId("secret-sort-toggle").click();
+    await expect(page).not.toHaveURL(/orderDirection=desc/);
     await expect(secretRow.getByRole("textbox").first()).toHaveValue("BASELINE_KEY");
 
     expect(pageErrors).toHaveLength(0);
