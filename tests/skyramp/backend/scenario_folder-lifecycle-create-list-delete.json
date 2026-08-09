@@ -1,0 +1,123 @@
+[
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "{\"projectName\": \"skyramp-lifecycle-test\"}",
+    "ResponseBody": "{\"project\": {\"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\", \"slug\": \"skyramp-lifecycle-test\", \"name\": \"skyramp-lifecycle-test\"}}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "POST",
+    "Path": "/api/v2/workspace",
+    "QueryParams": {},
+    "StatusCode": 200,
+    "Port": 8080,
+    "Timestamp": "2026-08-09T22:42:28.695Z",
+    "Scheme": "http",
+    "scenarioName": "folder-lifecycle-create-list-delete",
+    "UniqueFields": [
+      "projectName"
+    ]
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "{\"projectId\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\", \"environment\": \"dev\", \"name\": \"lifecycle-folder\", \"path\": \"/\"}",
+    "ResponseBody": "{\"folder\": {\"id\": \"d4e5f6a7-b8c9-0123-defa-234567890123\", \"name\": \"lifecycle-folder\"}}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "POST",
+    "Path": "/api/v2/folders",
+    "QueryParams": {},
+    "StatusCode": 200,
+    "Port": 8080,
+    "Timestamp": "2026-08-09T22:42:29.695Z",
+    "Scheme": "http",
+    "scenarioName": "folder-lifecycle-create-list-delete"
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "",
+    "ResponseBody": "{\"folders\": [{\"id\": \"d4e5f6a7-b8c9-0123-defa-234567890123\", \"name\": \"lifecycle-folder\"}]}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "GET",
+    "Path": "/api/v2/folders",
+    "QueryParams": {
+      "projectId": [
+        "c3d4e5f6-a7b8-9012-cdef-123456789012"
+      ],
+      "environment": [
+        "dev"
+      ],
+      "path": [
+        "/"
+      ]
+    },
+    "StatusCode": 200,
+    "Port": 8080,
+    "Timestamp": "2026-08-09T22:42:30.695Z",
+    "Scheme": "http",
+    "scenarioName": "folder-lifecycle-create-list-delete"
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "",
+    "ResponseBody": "{}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "DELETE",
+    "Path": "/api/v2/workspace/skyramp-lifecycle-test",
+    "QueryParams": {},
+    "StatusCode": 204,
+    "Port": 8080,
+    "Timestamp": "2026-08-09T22:42:31.695Z",
+    "Scheme": "http",
+    "scenarioName": "folder-lifecycle-create-list-delete"
+  }
+]
