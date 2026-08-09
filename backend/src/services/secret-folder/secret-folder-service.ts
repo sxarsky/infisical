@@ -15,7 +15,8 @@ import { TSecretApprovalRequestDALFactory } from "@app/ee/services/secret-approv
 import { TSecretApprovalRequestSecretDALFactory } from "@app/ee/services/secret-approval-request/secret-approval-request-secret-dal";
 import { TSecretRotationV2DALFactory } from "@app/ee/services/secret-rotation-v2/secret-rotation-v2-dal";
 import { TSecretSnapshotServiceFactory } from "@app/ee/services/secret-snapshot/secret-snapshot-service";
-import { PgSqlLock } from "@app/keystore/keystore";
+import { KeyStorePrefixes, KeyStoreTtls, PgSqlLock, TKeyStoreFactory } from "@app/keystore/keystore";
+import { generateCacheKeyFromData } from "@app/lib/crypto/cache";
 import { BadRequestError, NotFoundError } from "@app/lib/errors";
 import { OrderByDirection, OrgServiceActor } from "@app/lib/types";
 import { ActorType } from "@app/services/auth/auth-type";
@@ -114,6 +115,7 @@ type TSecretFolderServiceFactoryDep = {
   secretV2BridgeService: Pick<TSecretV2BridgeServiceFactory, "dispatchSecretMoveSideEffects">;
   reminderDAL: Pick<TReminderDALFactory, "findSecretReminders" | "delete">;
   reminderService: Pick<TReminderServiceFactory, "batchCreateReminders">;
+  keyStore: Pick<TKeyStoreFactory, "getItem" | "setItemWithExpiry">;
 };
 
 export type TSecretFolderServiceFactory = ReturnType<typeof secretFolderServiceFactory>;
@@ -142,7 +144,8 @@ export const secretFolderServiceFactory = ({
   secretImportDAL,
   secretV2BridgeService,
   reminderDAL,
-  reminderService
+  reminderService,
+  keyStore
 }: TSecretFolderServiceFactoryDep) => {
   const createFolder = async ({
     projectId,
@@ -881,6 +884,29 @@ export const secretFolderServiceFactory = ({
         }));
     }
 
+    // The flat folder listing is fetched every time a user expands a node in the
+    // secret explorer tree, so serve it from a short-lived (1m) cache to avoid
+    // re-running the tree query on each navigation. Key on the project plus the
+    // listing parameters so distinct queries (path, search, order, pagination)
+    // don't share a cached page.
+    const cacheKey = KeyStorePrefixes.FolderList(
+      projectId,
+      generateCacheKeyFromData({
+        secretPath,
+        search: search ?? null,
+        orderBy: orderBy ?? null,
+        orderDirection: orderDirection ?? null,
+        limit: limit ?? null,
+        offset: offset ?? null,
+        lastSecretModified: lastSecretModified ?? null
+      })
+    );
+
+    const cachedFolders = await keyStore.getItem(cacheKey);
+    if (cachedFolders) {
+      return JSON.parse(cachedFolders) as Awaited<ReturnType<typeof folderDAL.findByMultiEnv>>;
+    }
+
     const folders = await folderDAL.findByMultiEnv({
       environmentIds: [env.id],
       parentIds: [parentFolder.id],
@@ -890,12 +916,16 @@ export const secretFolderServiceFactory = ({
       limit,
       offset
     });
-    if (lastSecretModified) {
-      return folders.filter((el) =>
-        el.lastSecretModified ? el.lastSecretModified >= new Date(lastSecretModified) : false
-      );
-    }
-    return folders;
+
+    const result = lastSecretModified
+      ? folders.filter((el) =>
+          el.lastSecretModified ? el.lastSecretModified >= new Date(lastSecretModified) : false
+        )
+      : folders;
+
+    await keyStore.setItemWithExpiry(cacheKey, KeyStoreTtls.FolderListInSeconds, JSON.stringify(result));
+
+    return result;
   };
 
   // get folders for multiple envs

@@ -50,6 +50,7 @@ export const KeyStorePrefixes = {
   WaitUntilReadyProjectEnvironmentOperation: (projectId: string) =>
     `wait-until-ready-project-environments-operation-${projectId}`,
   ProjectEnvironmentLock: (projectId: string) => `project-environment-lock-${projectId}` as const,
+  FolderList: (projectId: string, scope: string) => `folder-list:${projectId}:${scope}` as const,
   SyncSecretIntegrationLock: (projectId: string, environmentSlug: string, secretPath: string) =>
     `sync-integration-mutex-${projectId}-${environmentSlug}-${secretPath}` as const,
   SyncSecretIntegrationLastRunTimestamp: (projectId: string, environmentSlug: string, secretPath: string) =>
@@ -174,6 +175,7 @@ export const KeyStoreTtls = {
   AiMcpServerOAuthSessionInSeconds: 600, // 10 minutes
   DashboardCacheInSeconds: 600, // 10 minutes
   ProjectEnvironmentOperationMarkerInSeconds: 10,
+  FolderListInSeconds: 60, // 1 minute
   UserMfaUnlockEmailSentInSeconds: 300, // 5 minutes
   TelemetryGroupIdentifyInSeconds: 3600, // 1 hour
   TelemetryAggregatedEventInSeconds: 600, // 10 minutes
