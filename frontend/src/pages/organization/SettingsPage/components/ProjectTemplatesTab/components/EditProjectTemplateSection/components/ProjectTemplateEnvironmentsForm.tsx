@@ -159,6 +159,17 @@ export const ProjectTemplateEnvironmentsForm = ({
             </Tr>
           </THead>
           <TBody>
+            {environments.length === 0 && (
+              <Tr>
+                <Td
+                  colSpan={isInfisicalTemplate ? 2 : 3}
+                  className="py-6 text-center text-sm text-mineshaft-400"
+                  data-testid="project-template-environments-empty"
+                >
+                  No environments have been added to this template yet.
+                </Td>
+              </Tr>
+            )}
             {environments.map(({ id, name, slug }, pos) => (
               <Tr key={id}>
                 <Td>
