@@ -54,11 +54,11 @@ test('testUi', async ({ page }) => {
     await page.goto(devSecretsUrl);
     await page.waitForLoadState('networkidle');
 
-    // Locate the secret row by its row-container styling and assert it renders the key.
-    const secretRow = page.locator("div.border-b.bg-mineshaft-800");
-    await secretRow.first().waitFor({ state: 'visible', timeout: 15000 });
-    await expect(secretRow).toHaveCount(1);
-    await expect(secretRow.getByRole("textbox").first()).toHaveValue("BASELINE_KEY");
+    // Locate the secret value cell by the stable data-testid added in this PR.
+    const valueCell = page.locator('[data-testid="secret-row-value-cell"]');
+    await valueCell.first().waitFor({ state: 'visible', timeout: 15000 });
+    await expect(valueCell).toHaveCount(1);
+    await expect(page.getByRole("textbox", { name: "Secret name" }).first()).toHaveValue("BASELINE_KEY");
 
     expect(pageErrors).toHaveLength(0);
 });
