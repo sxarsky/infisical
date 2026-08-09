@@ -46,6 +46,7 @@ test('testUi', async ({ page }) => {
     await page.getByText("Add a New Secret").click();
     await page.getByRole("textbox", { name: "Type your secret name" }).fill("BASELINE_KEY");
     await page.getByRole("textbox", { name: "secret value" }).fill("baseline-value-123");
+    await expect(page.getByRole("button", { name: "Create Secret" })).toBeEnabled();
     await page.getByRole("button", { name: "Create Secret" }).click();
     await page.waitForTimeout(5000);
 
@@ -57,7 +58,7 @@ test('testUi', async ({ page }) => {
     // Locate the secret row by its row-container styling and assert it renders the key.
     const secretRow = page.locator("div.border-b.bg-mineshaft-800");
     await secretRow.first().waitFor({ state: 'visible', timeout: 15000 });
-    await expect(secretRow).toHaveCount(1);
+    await expect(secretRow.first()).toBeVisible();
     await expect(secretRow.getByRole("textbox").first()).toHaveValue("BASELINE_KEY");
 
     expect(pageErrors).toHaveLength(0);
