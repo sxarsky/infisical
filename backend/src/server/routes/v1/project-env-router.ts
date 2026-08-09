@@ -15,6 +15,45 @@ const booleanParam = () => z.enum(["true", "false"]).transform((value) => value 
 export const registerProjectEnvRouter = async (server: FastifyZodProvider) => {
   server.route({
     method: "GET",
+    url: "/:projectId/environments",
+    config: {
+      rateLimit: readLimit
+    },
+    schema: {
+      hide: false,
+      operationId: "listEnvironments",
+      tags: [ApiDocsTags.Environments],
+      description: "List the environments of a project",
+      security: [
+        {
+          bearerAuth: []
+        }
+      ],
+      params: z.object({
+        projectId: z.string().trim().describe(ENVIRONMENTS.GET.projectId)
+      }),
+      response: {
+        200: z.object({
+          environments: ProjectEnvironmentsSchema.array()
+        })
+      }
+    },
+    onRequest: verifyAuth([AuthMode.JWT, AuthMode.IDENTITY_ACCESS_TOKEN]),
+    handler: async (req) => {
+      const environments = await server.services.projectEnv.getProjectEnvironments({
+        actorId: req.permission.id,
+        actor: req.permission.type,
+        actorOrgId: req.permission.orgId,
+        actorAuthMethod: req.permission.authMethod,
+        projectId: req.params.projectId
+      });
+
+      return { environments };
+    }
+  });
+
+  server.route({
+    method: "GET",
     url: "/:projectId/environments/:envId",
     config: {
       rateLimit: readLimit

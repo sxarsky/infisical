@@ -14,7 +14,14 @@ import { ActorType } from "../auth/auth-type";
 import { TSecretFolderDALFactory } from "../secret-folder/secret-folder-dal";
 import { TProjectEnvDALFactory } from "./project-env-dal";
 import { SOFT_DELETE_GRACE_MS } from "./project-env-queue";
-import { TCreateEnvDTO, TDeleteEnvDTO, TGetEnvDTO, TRestoreEnvDTO, TUpdateEnvDTO } from "./project-env-types";
+import {
+  TCreateEnvDTO,
+  TDeleteEnvDTO,
+  TGetEnvDTO,
+  TListEnvDTO,
+  TRestoreEnvDTO,
+  TUpdateEnvDTO
+} from "./project-env-types";
 
 type TProjectEnvServiceFactoryDep = {
   projectEnvDAL: TProjectEnvDALFactory;
@@ -127,6 +134,7 @@ export const projectEnvServiceFactory = ({
         KeyStoreTtls.ProjectEnvironmentOperationMarkerInSeconds,
         "true"
       );
+      await keyStore.deleteItem(KeyStorePrefixes.ProjectEnvironmentsOverview(projectId));
 
       return env;
     } finally {
@@ -220,6 +228,8 @@ export const projectEnvServiceFactory = ({
         KeyStoreTtls.ProjectEnvironmentOperationMarkerInSeconds,
         "true"
       );
+
+      await keyStore.deleteItem(KeyStorePrefixes.ProjectEnvironmentsOverview(projectId));
 
       return { environment: env, old: oldEnv };
     } finally {
@@ -329,6 +339,7 @@ export const projectEnvServiceFactory = ({
         KeyStoreTtls.ProjectEnvironmentOperationMarkerInSeconds,
         "true"
       );
+      await keyStore.deleteItem(KeyStorePrefixes.ProjectEnvironmentsOverview(projectId));
 
       return env;
     } finally {
@@ -438,11 +449,48 @@ export const projectEnvServiceFactory = ({
     return environment;
   };
 
+  const getProjectEnvironments = async ({
+    projectId,
+    actor,
+    actorId,
+    actorOrgId,
+    actorAuthMethod
+  }: TListEnvDTO) => {
+    const { permission } = await permissionService.getProjectPermission({
+      actor,
+      actorId,
+      projectId,
+      actorAuthMethod,
+      actorOrgId,
+      actionProjectType: ActionProjectType.SecretManager
+    });
+    ForbiddenError.from(permission).throwUnlessCan(ProjectPermissionActions.Read, ProjectPermissionSub.Environments);
+
+    // The environments list is read on nearly every SecretManager page load (dashboard,
+    // secret explorer, integrations), so serve it from a short-lived cache to avoid a DB
+    // round-trip on the hot path. The cache is invalidated by the environment mutations.
+    const cacheKey = KeyStorePrefixes.ProjectEnvironmentsOverview(projectId);
+    const cached = await keyStore.getItem(cacheKey);
+    if (cached) {
+      return JSON.parse(cached) as Awaited<ReturnType<typeof projectEnvDAL.find>>;
+    }
+
+    const environments = await projectEnvDAL.find({ projectId });
+    await keyStore.setItemWithExpiry(
+      cacheKey,
+      KeyStoreTtls.ProjectEnvironmentsOverviewInSeconds,
+      JSON.stringify(environments)
+    );
+
+    return environments;
+  };
+
   return {
     createEnvironment,
     updateEnvironment,
     deleteEnvironment,
     restoreEnvironment,
-    getEnvironmentById
+    getEnvironmentById,
+    getProjectEnvironments
   };
 };
