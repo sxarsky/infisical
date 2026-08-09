@@ -3,6 +3,7 @@ import { ForbiddenError } from "@casl/ability";
 import { ActionProjectType } from "@app/db/schemas";
 import { TPermissionServiceFactory } from "@app/ee/services/permission/permission-service-types";
 import { ProjectPermissionActions, ProjectPermissionSub } from "@app/ee/services/permission/project-permission";
+import { KeyStorePrefixes, KeyStoreTtls, TKeyStoreFactory } from "@app/keystore/keystore";
 import { BadRequestError, NotFoundError } from "@app/lib/errors";
 
 import { TSecretV2BridgeDALFactory } from "../secret-v2-bridge/secret-v2-bridge-dal";
@@ -20,6 +21,7 @@ type TSecretTagServiceFactoryDep = {
   secretTagDAL: TSecretTagDALFactory;
   permissionService: Pick<TPermissionServiceFactory, "getProjectPermission">;
   secretV2BridgeDAL: Pick<TSecretV2BridgeDALFactory, "invalidateSecretCacheByProjectId">;
+  keyStore: Pick<TKeyStoreFactory, "getItem" | "setItemWithExpiry" | "deleteItem">;
 };
 
 export type TSecretTagServiceFactory = ReturnType<typeof secretTagServiceFactory>;
@@ -27,7 +29,8 @@ export type TSecretTagServiceFactory = ReturnType<typeof secretTagServiceFactory
 export const secretTagServiceFactory = ({
   secretTagDAL,
   permissionService,
-  secretV2BridgeDAL
+  secretV2BridgeDAL,
+  keyStore
 }: TSecretTagServiceFactoryDep) => {
   const createTag = async ({ slug, actor, color, actorId, actorOrgId, actorAuthMethod, projectId }: TCreateTagDTO) => {
     const { permission } = await permissionService.getProjectPermission({
@@ -50,6 +53,7 @@ export const secretTagServiceFactory = ({
       createdBy: actorId,
       createdByActorType: actor
     });
+    await keyStore.deleteItem(KeyStorePrefixes.ProjectSecretTagsList(projectId));
     return newTag;
   };
 
@@ -93,6 +97,7 @@ export const secretTagServiceFactory = ({
 
     const deletedTag = await secretTagDAL.deleteById(tag.id);
     await secretV2BridgeDAL.invalidateSecretCacheByProjectId(tag.projectId);
+    await keyStore.deleteItem(KeyStorePrefixes.ProjectSecretTagsList(tag.projectId));
     return deletedTag;
   };
 
@@ -141,7 +146,18 @@ export const secretTagServiceFactory = ({
     });
     ForbiddenError.from(permission).throwUnlessCan(ProjectPermissionActions.Read, ProjectPermissionSub.Tags);
 
+    // The project tag list is fetched on every secret dashboard render (tag chips + the tag
+    // filter dropdown), so serve it from a short-lived cache to avoid a DB round-trip on that
+    // hot path. The cache is invalidated by the tag mutations.
+    const cacheKey = KeyStorePrefixes.ProjectSecretTagsList(projectId);
+    const cached = await keyStore.getItem(cacheKey);
+    if (cached) {
+      return JSON.parse(cached) as Awaited<ReturnType<typeof secretTagDAL.find>>;
+    }
+
     const tags = await secretTagDAL.find({ projectId }, { sort: [["createdAt", "asc"]] });
+    await keyStore.setItemWithExpiry(cacheKey, KeyStoreTtls.ProjectSecretTagsListInSeconds, JSON.stringify(tags));
+
     return tags;
   };
 
