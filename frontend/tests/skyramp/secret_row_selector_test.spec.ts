@@ -54,11 +54,17 @@ test('testUi', async ({ page }) => {
     await page.goto(devSecretsUrl);
     await page.waitForLoadState('networkidle');
 
-    // Locate the secret row by its row-container styling and assert it renders the key.
-    const secretRow = page.locator("div.border-b.bg-mineshaft-800");
-    await secretRow.first().waitFor({ state: 'visible', timeout: 15000 });
-    await expect(secretRow).toHaveCount(1);
+    // Locate the secret row using a stable role+text filter and assert it renders the key.
+    const secretRow = page.getByRole("row").filter({ hasText: "BASELINE_KEY" });
+    await secretRow.waitFor({ state: 'visible', timeout: 15000 });
+    await expect(secretRow).toBeVisible();
     await expect(secretRow.getByRole("textbox").first()).toHaveValue("BASELINE_KEY");
+
+    // Assert the new sort toggle button is present (data-testid added in this PR).
+    await expect(page.getByTestId("secret-sort-toggle")).toBeVisible();
+
+    // Assert the dashboard container shows data-state="results" when secrets are present.
+    await expect(page.locator("#dashboard")).toHaveAttribute("data-state", "results");
 
     expect(pageErrors).toHaveLength(0);
 });
