@@ -22,7 +22,7 @@ services:
       schemaPath: http://localhost:8080/api/docs/json
       authType: bearer
       authHeader: Authorization
-      baseUrl: http://nginx:80
+      baseUrl: http://host.docker.internal:8080
     runtimeDetails:
       runtime: docker
       dockerNetwork: infisical_default
@@ -33,7 +33,7 @@ services:
     api:
       authType: none
       authHeader: ""
-      baseUrl: http://nginx:80
+      baseUrl: http://host.docker.internal:8080
     runtimeDetails:
       runtime: docker
       dockerNetwork: infisical_default
