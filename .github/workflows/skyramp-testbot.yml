@@ -46,16 +46,16 @@ jobs:
           sed -i "s#SMTP_FROM_ADDRESS=.*#SMTP_FROM_ADDRESS=#" .env
           sed -i "s#SMTP_FROM_NAME=.*#SMTP_FROM_NAME=#" .env
 
-      - uses: skyramp/testbot@eb12da0e558fad795bfc9b39a60616de46efa853 # v0.10.4
+      - uses: skyramp/testbot@87752cf8ab396b6aa73c47069e79834bd1c75eda # v0.11.5
         with:
           skyrampLicenseFile: ${{ secrets.SKYRAMP_LICENSE_FILE }}
           anthropicApiKey: ${{ secrets.SKYRAMP_TESTBOT_API_KEY }}
           githubToken: ${{ steps.skyramp-testbot-app-token.outputs.token }}
-          skyrampExecutorVersion: 'v1.3.28'
-          skyrampMcpVersion: '0.2.6'
+          skyrampExecutorVersion: 'v1.3.37'
+          skyrampMcpVersion: '0.3.2'
           targetSetupCommand: 'docker compose -f docker-compose.bdd.yml up -d --build'
           targetReadyCheckCommand: 'curl -sf http://localhost:8080/api/status && curl -sf http://localhost:8080 | grep -q "root"'
-          targetReadyCheckTimeout: '300'
+          targetReadyCheckTimeout: '900'
           authTokenCommand: 'curl -sf -X POST http://localhost:8080/api/v1/admin/bootstrap -H "Content-Type: application/json" -d "{\"email\":\"admin@test.com\",\"password\":\"Password123!\",\"organization\":\"TestOrg\"}" | jq -r ".identity.credentials.token"'
           uiCredentials: 'username=admin@test.com;password=Password123!;role=admin'
           targetTeardownCommand: 'docker compose -f docker-compose.bdd.yml down -v'
