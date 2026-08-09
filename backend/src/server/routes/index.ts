@@ -3995,6 +3995,7 @@ export const registerRoutes = async (
           secretScanningConfigured: z.boolean().optional(),
           samlDefaultOrgSlug: z.string().optional(),
           auditLogStorageDisabled: z.boolean().optional(),
+          apiVersion: z.string(),
           maxIdentityAccessTokenTTL: z.number().optional()
         })
       }
@@ -4018,6 +4019,7 @@ export const registerRoutes = async (
       return {
         date: new Date(),
         message: "Ok",
+        apiVersion: "v1",
         emailConfigured: cfg.isSmtpConfigured,
         inviteOnlySignup: Boolean(serverCfg.allowSignUp),
         redisConfigured: cfg.isRedisConfigured,
