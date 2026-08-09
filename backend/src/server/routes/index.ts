@@ -1944,7 +1944,7 @@ export const registerRoutes = async (
     secretVersionV2TagBridgeDAL: secretVersionTagV2BridgeDAL
   });
 
-  const secretTagService = secretTagServiceFactory({ secretTagDAL, permissionService, secretV2BridgeDAL });
+  const secretTagService = secretTagServiceFactory({ secretTagDAL, permissionService, secretV2BridgeDAL, keyStore });
   const secretValidationRuleService = secretValidationRuleServiceFactory({
     secretValidationRuleDAL,
     projectEnvDAL,
