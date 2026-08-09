@@ -22,9 +22,8 @@ services:
       schemaPath: http://localhost:8080/api/docs/json
       authType: bearer
       authHeader: Authorization
-      baseUrl: http://localhost:8080
+      baseUrl: http://infisical-bdd-nginx:80
     runtimeDetails:
-      serverStartCommand: docker compose -f docker-compose.bdd.yml up -d backend
       runtime: docker
       dockerNetwork: infisical_default
   - serviceName: infisical-frontend
@@ -34,8 +33,7 @@ services:
     api:
       authType: none
       authHeader: ""
-      baseUrl: http://localhost:8080
+      baseUrl: http://infisical-bdd-nginx:80
     runtimeDetails:
-      serverStartCommand: docker compose -f docker-compose.bdd.yml up -d frontend
       runtime: docker
       dockerNetwork: infisical_default
