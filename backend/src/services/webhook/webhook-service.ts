@@ -244,10 +244,16 @@ export const webhookServiceFactory = ({
     });
 
     return webhooks.map((w) => {
-      const { url } = decryptWebhookDetails(w, (value) => secretManagerDecryptor({ cipherTextBlob: value }).toString());
+      const { url, secretKey } = decryptWebhookDetails(w, (value) =>
+        secretManagerDecryptor({ cipherTextBlob: value }).toString()
+      );
       return {
         ...withEventsFilter(w),
-        url
+        url,
+        signature: {
+          enabled: Boolean(secretKey),
+          key: secretKey
+        }
       };
     });
   };

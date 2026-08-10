@@ -333,7 +333,15 @@ export const registerWebhookRouter = async (server: FastifyZodProvider) => {
       response: {
         200: z.object({
           message: z.string(),
-          webhooks: sanitizedWebhookSchema.extend({ url: z.string() }).array()
+          webhooks: sanitizedWebhookSchema
+            .extend({
+              url: z.string(),
+              signature: z.object({
+                enabled: z.boolean(),
+                key: z.string()
+              })
+            })
+            .array()
         })
       }
     },
