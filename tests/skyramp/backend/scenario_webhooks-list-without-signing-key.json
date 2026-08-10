@@ -1,0 +1,144 @@
+[
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "{\"projectName\": \"webhook-sig-disabled-test\"}",
+    "ResponseBody": "{\"workspace\": {\"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678902\", \"slug\": \"webhook-sig-disabled-test\", \"name\": \"webhook-sig-disabled-test\"}}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "POST",
+    "Path": "/api/v2/workspace",
+    "QueryParams": {},
+    "StatusCode": 201,
+    "Port": 8080,
+    "Timestamp": "2026-08-10T01:10:25.235Z",
+    "Scheme": "http",
+    "scenarioName": "webhooks-list-without-signing-key",
+    "UniqueFields": [
+      "projectName"
+    ]
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "{\"projectId\": \"c1d2e3f4-a5b6-7890-cdef-012345678902\", \"environment\": \"dev\", \"webhookUrl\": \"https://example.com/webhook-nosign\"}",
+    "ResponseBody": "{\"message\": \"Successfully created webhook\", \"webhook\": {\"id\": \"d1e2f3a4-b5c6-7890-def0-123456789003\", \"projectId\": \"c1d2e3f4-a5b6-7890-cdef-012345678902\"}}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "POST",
+    "Path": "/api/v1/webhooks",
+    "QueryParams": {},
+    "StatusCode": 200,
+    "Port": 8080,
+    "Timestamp": "2026-08-10T01:10:26.235Z",
+    "Scheme": "http",
+    "scenarioName": "webhooks-list-without-signing-key"
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "",
+    "ResponseBody": "{\"message\": \"Successfully fetched webhook\", \"webhooks\": [{\"id\": \"d1e2f3a4-b5c6-7890-def0-123456789003\", \"projectId\": \"c1d2e3f4-a5b6-7890-cdef-012345678902\", \"signature\": {\"enabled\": false, \"key\": \"\"}}]}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "GET",
+    "Path": "/api/v1/webhooks",
+    "QueryParams": {
+      "projectId": [
+        "c1d2e3f4-a5b6-7890-cdef-012345678902"
+      ]
+    },
+    "StatusCode": 200,
+    "Port": 8080,
+    "Timestamp": "2026-08-10T01:10:27.235Z",
+    "Scheme": "http",
+    "scenarioName": "webhooks-list-without-signing-key"
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "",
+    "ResponseBody": "{\"message\": \"Successfully deleted webhook\", \"webhook\": {\"id\": \"d1e2f3a4-b5c6-7890-def0-123456789003\"}}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "DELETE",
+    "Path": "/api/v1/webhooks/d1e2f3a4-b5c6-7890-def0-123456789003",
+    "QueryParams": {},
+    "StatusCode": 200,
+    "Port": 8080,
+    "Timestamp": "2026-08-10T01:10:28.235Z",
+    "Scheme": "http",
+    "scenarioName": "webhooks-list-without-signing-key"
+  },
+  {
+    "Source": "192.168.65.1:39998",
+    "Destination": "host.docker.internal",
+    "RequestBody": "",
+    "ResponseBody": "{}",
+    "RequestHeaders": {
+      "Content-Type": [
+        "application/json"
+      ],
+      "Authorization": [
+        "Bearer SKYRAMP_PLACEHOLDER_TOKEN"
+      ]
+    },
+    "ResponseHeaders": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "Method": "DELETE",
+    "Path": "/api/v2/workspace/webhook-sig-disabled-test",
+    "QueryParams": {},
+    "StatusCode": 204,
+    "Port": 8080,
+    "Timestamp": "2026-08-10T01:10:29.235Z",
+    "Scheme": "http",
+    "scenarioName": "webhooks-list-without-signing-key"
+  }
+]
