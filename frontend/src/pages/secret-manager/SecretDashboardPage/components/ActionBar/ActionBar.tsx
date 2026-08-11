@@ -1168,8 +1168,14 @@ export const ActionBar = ({
           isMultiSelectActive && "h-16"
         )}
       >
-        <div className="mt-3.5 flex items-center rounded-md border border-mineshaft-600 bg-mineshaft-800 px-4 py-2 text-bunker-300">
-          <div className="mr-2 text-sm">{Object.keys(selectedSecrets).length} Selected</div>
+        <div
+          data-testid="bulk-action-bar"
+          data-selected-count={Object.keys(selectedSecrets).length}
+          className="mt-3.5 flex items-center rounded-md border border-mineshaft-600 bg-mineshaft-800 px-4 py-2 text-bunker-300"
+        >
+          <div data-selected-count={Object.keys(selectedSecrets).length} className="mr-2 text-sm">
+            {Object.keys(selectedSecrets).length} Selected
+          </div>
           <button
             type="button"
             className="mr-auto text-xs text-mineshaft-400 underline-offset-2 hover:text-mineshaft-200 hover:underline"
