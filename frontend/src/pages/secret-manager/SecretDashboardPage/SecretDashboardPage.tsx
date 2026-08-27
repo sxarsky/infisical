@@ -147,6 +147,17 @@ const Page = () => {
     setUserTablePreference("secretDashboardTable", PreferenceKey.PerPage, newPerPage);
   };
 
+  // Restore sort + page from the URL on load (deep-link / back-forward)
+  useEffect(() => {
+    if (routerQueryParams.orderDirection) {
+      setOrderDirection(routerQueryParams.orderDirection as OrderByDirection);
+    }
+    if (routerQueryParams.page && Number(routerQueryParams.page) > 1) {
+      setPage(Number(routerQueryParams.page));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [snapshotId, setSnapshotId] = useState<string | null>(null);
   const isRollbackMode = Boolean(snapshotId);
   const { popUp, handlePopUpClose, handlePopUpToggle, handlePopUpOpen } = usePopUp([
@@ -528,10 +539,12 @@ const Page = () => {
     }
   }, [data, isBatchMode, setExistingKeys, secrets, importedSecrets, folders]);
 
-  const handleSortToggle = () =>
-    setOrderDirection((state) =>
-      state === OrderByDirection.ASC ? OrderByDirection.DESC : OrderByDirection.ASC
-    );
+  const handleSortToggle = () => {
+    const nextDirection =
+      orderDirection === OrderByDirection.ASC ? OrderByDirection.DESC : OrderByDirection.ASC;
+    setOrderDirection(nextDirection);
+    navigate({ search: (prev) => ({ ...prev, orderBy, orderDirection: nextDirection }) });
+  };
 
   const handleTagToggle = useCallback(
     (tagSlug: string) => {
@@ -938,7 +951,13 @@ const Page = () => {
               isNotEmpty && "rounded-b-none"
             )}
           >
-            <div className="flex flex-col" id="dashboard">
+            <div
+              className="flex flex-col"
+              id="dashboard"
+              data-state={
+                (isDetailsFetching && "loading") || (totalCount === 0 ? "empty" : "results")
+              }
+            >
               {isNotEmpty && (
                 <div
                   className={twMerge(
@@ -983,6 +1002,7 @@ const Page = () => {
                       style={{ width: colWidth }}
                       role="button"
                       tabIndex={0}
+                      data-testid="secret-sort-toggle"
                       onClick={handleSortToggle}
                       onKeyDown={(evt) => {
                         if (evt.key === "Enter") handleSortToggle();
@@ -1152,7 +1172,10 @@ const Page = () => {
                 count={totalCount + pendingChanges.secrets.length + pendingChanges.folders.length}
                 page={page}
                 perPage={perPage}
-                onChangePage={(newPage) => setPage(newPage)}
+                onChangePage={(newPage) => {
+                  setPage(newPage);
+                  navigate({ search: (prev) => ({ ...prev, page: newPage }) });
+                }}
                 onChangePerPage={handlePerPageChange}
               />
             )}
