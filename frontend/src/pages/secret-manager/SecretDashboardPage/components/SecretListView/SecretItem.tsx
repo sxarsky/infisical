@@ -424,6 +424,8 @@ export const SecretItem = memo(
             pendingAction === PendingAction.Update && "border-l-2 border-l-yellow-600/75",
             pendingAction === PendingAction.Create && "border-l-2 border-l-green-600/75"
           )}
+          data-testid="secret-row"
+          data-secret-key={secret.key}
         >
           <div className="group flex">
             <div
