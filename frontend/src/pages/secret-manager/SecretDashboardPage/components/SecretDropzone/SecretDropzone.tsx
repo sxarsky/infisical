@@ -145,6 +145,9 @@ export const SecretDropzone = ({
   const { t } = useTranslation();
   const [isDragActive, setDragActive] = useToggle();
   const [isLoading, setIsLoading] = useToggle();
+  const [uploadState, setUploadState] = useState<
+    "idle" | "dragging" | "parsing" | "done" | "error"
+  >("idle");
 
   // Maps matrix columns to parts of a secret
   const [importSecretMatrixMap, setImportSecretMatrixMap] = useState<SecretMatrixMap>({
@@ -165,9 +168,18 @@ export const SecretDropzone = ({
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive.on();
+      setUploadState("dragging");
     } else if (e.type === "dragleave") {
       setDragActive.off();
+      setUploadState("idle");
     }
+  };
+
+  const SUPPORTED_UPLOAD_EXTENSIONS = ["txt", "env", "yml", "yaml", "json", "csv"];
+
+  const isSupportedFile = (file: File) => {
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+    return SUPPORTED_UPLOAD_EXTENSIONS.includes(extension);
   };
 
   const handleSaveSecrets = async (data: TSecOverwriteOpt) => {
@@ -249,6 +261,7 @@ export const SecretDropzone = ({
     const envSecretKeys = Object.keys(env);
 
     if (!envSecretKeys.length) {
+      setUploadState("error");
       createNotification({
         type: "error",
         text: "Failed to find secrets"
@@ -291,8 +304,10 @@ export const SecretDropzone = ({
         create: createSecrets,
         existingSecrets: relevantExistingSecrets
       });
+      setUploadState("done");
     } catch (e) {
       console.error(e);
+      setUploadState("error");
       createNotification({
         text: "Failed to check for secret conflicts",
         type: "error"
@@ -305,6 +320,7 @@ export const SecretDropzone = ({
   const parseFile = (file?: File) => {
     const reader = new FileReader();
     if (!file) {
+      setUploadState("error");
       createNotification({
         text: "You can't inject files from VS Code. Click 'Reveal in finder', and drag your file directly from the directory where it's located.",
         type: "error"
@@ -312,9 +328,20 @@ export const SecretDropzone = ({
       return;
     }
 
+    if (!isSupportedFile(file)) {
+      setUploadState("error");
+      createNotification({
+        type: "error",
+        text: "Unsupported file type. Supported types: .txt, .env, .yml, .yaml, .json, .csv"
+      });
+      return;
+    }
+
     setIsLoading.on();
+    setUploadState("parsing");
     reader.onload = (event) => {
       if (!event?.target?.result) {
+        setUploadState("error");
         createNotification({
           type: "error",
           text: "Invalid file contents."
@@ -404,6 +431,7 @@ export const SecretDropzone = ({
   return (
     <div>
       <div
+        data-upload-state={uploadState}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
