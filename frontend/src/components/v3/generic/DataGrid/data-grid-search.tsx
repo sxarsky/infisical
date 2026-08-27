@@ -7,6 +7,7 @@ import { Input } from "@app/components/v3/generic/Input";
 import { useAsRef } from "./hooks/use-as-ref";
 import { useDebouncedCallback } from "./hooks/use-debounced-callback";
 import type { SearchState } from "./data-grid-types";
+import { getSearchMatchCellId } from "./data-grid-utils";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface DataGridSearchProps extends SearchState {}
@@ -154,6 +155,11 @@ function DataGridSearchImpl({
 
   if (!searchOpen) return null;
 
+  const activeMatch = searchMatches[matchIndex];
+  const activeMatchCellId = activeMatch
+    ? getSearchMatchCellId(activeMatch.rowIndex, activeMatch.columnId)
+    : undefined;
+
   return (
     <div
       role="search"
@@ -170,6 +176,7 @@ function DataGridSearchImpl({
           className="h-8 w-64"
           ref={inputRef}
           value={searchQuery}
+          aria-activedescendant={activeMatchCellId}
           onChange={onChange}
           onKeyDown={onKeyDown}
         />

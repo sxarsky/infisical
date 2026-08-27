@@ -69,6 +69,12 @@ export function getCellKey(rowIndex: number, columnId: string) {
   return `${rowIndex}:${columnId}`;
 }
 
+// Stable DOM id for a search-matched cell, used as the search input's
+// aria-activedescendant target so match traversal is observable.
+export function getSearchMatchCellId(rowIndex: number, columnId: string) {
+  return `grid-search-match-${rowIndex}-${sanitizeCssId(columnId)}`;
+}
+
 export function parseCellKey(cellKey: string): Required<CellPosition> {
   const parts = cellKey.split(":");
   const rowIndexStr = parts[0];
