@@ -79,6 +79,7 @@ type Props = {
   onDetailViewSecret: (sec: SecretV3RawSanitized) => void;
   isVisible?: boolean;
   isSelected?: boolean;
+  isDetailOpen?: boolean;
   onToggleSecretSelect: (secret: SecretV3RawSanitized) => void;
   tags: WsTag[];
   onCreateTag: (secret?: SecretV3RawSanitized) => void;
@@ -106,6 +107,7 @@ export const SecretItem = memo(
     onDetailViewSecret,
     isVisible,
     isSelected,
+    isDetailOpen,
     tags = [],
     onCreateTag,
     onToggleSecretSelect,
@@ -424,6 +426,7 @@ export const SecretItem = memo(
             pendingAction === PendingAction.Update && "border-l-2 border-l-yellow-600/75",
             pendingAction === PendingAction.Create && "border-l-2 border-l-green-600/75"
           )}
+          data-detail-open={isDetailOpen ? "true" : undefined}
         >
           <div className="group flex">
             <div
@@ -511,6 +514,7 @@ export const SecretItem = memo(
               className="flex w-80 grow items-center border-x border-mineshaft-600 py-1 pr-2 pl-4"
               tabIndex={0}
               role="button"
+              data-testid="secret-row-value-cell"
             >
               {secretValueHidden && !getFieldState("value").isDirty && (
                 <Tooltip
