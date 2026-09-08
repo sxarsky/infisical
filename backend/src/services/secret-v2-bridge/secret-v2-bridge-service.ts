@@ -398,6 +398,10 @@ export const secretV2BridgeServiceFactory = ({
               inputSecretData.secretComment,
               (value) => secretManagerEncryptor({ plainText: Buffer.from(value) }).cipherTextBlob
             ),
+            encryptedDescription: setKnexStringValue(
+              inputSecretData.secretDescription,
+              (value) => secretManagerEncryptor({ plainText: Buffer.from(value) }).cipherTextBlob
+            ),
             encryptedValue: inputSecretData.secretValue
               ? secretManagerEncryptor({ plainText: Buffer.from(inputSecretData.secretValue) }).cipherTextBlob
               : undefined,
@@ -476,6 +480,7 @@ export const secretV2BridgeServiceFactory = ({
         ...secret,
         value: inputSecret.secretValue,
         comment: inputSecret.secretComment || "",
+        description: inputSecret.secretDescription || "",
         secretMetadata: undefined
       },
       false
@@ -695,6 +700,10 @@ export const secretV2BridgeServiceFactory = ({
                 inputSecret.secretComment,
                 (value) => secretManagerEncryptor({ plainText: Buffer.from(value) }).cipherTextBlob
               ),
+              encryptedDescription: setKnexStringValue(
+                inputSecret.secretDescription,
+                (value) => secretManagerEncryptor({ plainText: Buffer.from(value) }).cipherTextBlob
+              ),
               skipMultilineEncoding: inputSecret.skipMultilineEncoding,
               key: inputSecret.newSecretName || secretName,
               tags: inputSecret.tagIds,
@@ -803,6 +812,7 @@ export const secretV2BridgeServiceFactory = ({
         ...updatedSecret[0],
         value: inputSecret.secretValue || "",
         comment: inputSecret.secretComment || "",
+        description: inputSecret.secretDescription || "",
         secretMetadata: undefined
       },
       secretValueHidden
@@ -939,6 +949,9 @@ export const secretV2BridgeServiceFactory = ({
             : "",
           comment: deletedSecret[0].encryptedComment
             ? secretManagerDecryptor({ cipherTextBlob: deletedSecret[0].encryptedComment }).toString()
+            : "",
+          description: deletedSecret[0].encryptedDescription
+            ? secretManagerDecryptor({ cipherTextBlob: deletedSecret[0].encryptedDescription }).toString()
             : ""
         },
         secretValueHidden
@@ -1106,6 +1119,9 @@ export const secretV2BridgeServiceFactory = ({
               : "",
             comment: secret.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedComment }).toString()
+              : "",
+            description: secret.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden
@@ -1446,6 +1462,9 @@ export const secretV2BridgeServiceFactory = ({
               : "",
             comment: secret.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedComment }).toString()
+              : "",
+            description: secret.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden && !isPersonalSecret
@@ -1682,6 +1701,10 @@ export const secretV2BridgeServiceFactory = ({
       ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedComment }).toString()
       : "";
 
+    const secretDescription = secret.encryptedDescription
+      ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedDescription }).toString()
+      : "";
+
     return reshapeBridgeSecret(
       secret.projectId,
       folderWithPath.environmentSlug,
@@ -1696,7 +1719,8 @@ export const secretV2BridgeServiceFactory = ({
             : el.value || ""
         })),
         value: secretValue,
-        comment: secretComment
+        comment: secretComment,
+        description: secretDescription
       },
       false
     );
@@ -1874,7 +1898,8 @@ export const secretV2BridgeServiceFactory = ({
               {
                 ...importedSecret,
                 value: importedSecret.secretValue || "",
-                comment: importedSecret.secretComment || ""
+                comment: importedSecret.secretComment || "",
+                description: importedSecret.secretDescription || ""
               },
               secretValueHidden
             );
@@ -1940,6 +1965,9 @@ export const secretV2BridgeServiceFactory = ({
         value: secretValue,
         comment: secret.encryptedComment
           ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedComment }).toString()
+          : "",
+        description: secret.encryptedDescription
+          ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedDescription }).toString()
           : ""
       },
       secretValueHidden
@@ -2164,7 +2192,8 @@ export const secretV2BridgeServiceFactory = ({
           ...el,
           secretMetadata: undefined,
           value: el.encryptedValue ? secretManagerDecryptor({ cipherTextBlob: el.encryptedValue }).toString() : "",
-          comment: el.encryptedComment ? secretManagerDecryptor({ cipherTextBlob: el.encryptedComment }).toString() : ""
+          comment: el.encryptedComment ? secretManagerDecryptor({ cipherTextBlob: el.encryptedComment }).toString() : "",
+          description: el.encryptedDescription ? secretManagerDecryptor({ cipherTextBlob: el.encryptedDescription }).toString() : ""
         },
         secretValueHidden
       );
@@ -2665,6 +2694,9 @@ export const secretV2BridgeServiceFactory = ({
             value: el.encryptedValue ? secretManagerDecryptor({ cipherTextBlob: el.encryptedValue }).toString() : "",
             comment: el.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: el.encryptedComment }).toString()
+              : "",
+            description: el.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: el.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden
@@ -2805,6 +2837,9 @@ export const secretV2BridgeServiceFactory = ({
             value: el.encryptedValue ? secretManagerDecryptor({ cipherTextBlob: el.encryptedValue }).toString() : "",
             comment: el.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: el.encryptedComment }).toString()
+              : "",
+            description: el.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: el.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden
@@ -2904,6 +2939,9 @@ export const secretV2BridgeServiceFactory = ({
             value: el.encryptedValue ? secretManagerDecryptor({ cipherTextBlob: el.encryptedValue }).toString() : "",
             comment: el.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: el.encryptedComment }).toString()
+              : "",
+            description: el.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: el.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden
@@ -3461,6 +3499,9 @@ export const secretV2BridgeServiceFactory = ({
               : "",
             comment: secret.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedComment }).toString()
+              : "",
+            description: secret.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: secret.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden
@@ -3552,6 +3593,9 @@ export const secretV2BridgeServiceFactory = ({
             value: el.encryptedValue ? secretManagerDecryptor({ cipherTextBlob: el.encryptedValue }).toString() : "",
             comment: el.encryptedComment
               ? secretManagerDecryptor({ cipherTextBlob: el.encryptedComment }).toString()
+              : "",
+            description: el.encryptedDescription
+              ? secretManagerDecryptor({ cipherTextBlob: el.encryptedDescription }).toString()
               : ""
           },
           secretValueHidden
