@@ -1714,6 +1714,7 @@ export const secretServiceFactory = ({
     secretPath,
     secretValue,
     secretComment,
+    secretDescription,
     skipMultilineEncoding,
     tagIds,
     secretReminderNote,
@@ -1775,6 +1776,7 @@ export const secretServiceFactory = ({
         environment,
         secretPath,
         secretComment,
+        secretDescription,
         secretValue,
         tagIds,
         secretReminderNote,
@@ -1899,6 +1901,7 @@ export const secretServiceFactory = ({
     secretReminderRecipients,
     metadata,
     secretComment,
+    secretDescription,
     newSecretName,
     secretMetadata
   }: TUpdateSecretRawDTO) => {
@@ -1950,6 +1953,7 @@ export const secretServiceFactory = ({
         skipMultilineEncoding,
         tagIds,
         secretComment,
+        secretDescription,
         secretPath,
         environment,
         projectId,
